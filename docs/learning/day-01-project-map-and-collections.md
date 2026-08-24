@@ -1,5 +1,22 @@
 # Day 1：集合与 MiniPay 项目地图
 
+> ## 先看这里：今天到底学到哪里
+>
+> 你今天**不需要看懂**本文件前半部分的 `hashCode 扰动`、`(capacity - 1) & hash`、负载因子、红黑树、`volatile`、CAS、Segment、Seata TCC、Saga、Outbox/Inbox 等词。它们是“未来 30 天会逐个学到的知识地图”，不是本日验收内容。
+>
+> 今天真正完成、需要复习的内容在本文后面的 **“Day 1 课堂复习总览（实际完成版）”**。目前你只需要会：
+>
+> 1. `HashMap` 的 `put`、`get`、同 key 覆盖、`size`、找不到返回 `null`。
+> 2. `HashMap` 按 key 找 value；两个 key 可能落在同一个位置，但还会继续比对 key。
+> 3. `ConcurrentHashMap` 与 HashMap 在单线程下看起来用法相同；它用于多线程共享 Map，`putIfAbsent` 表示“不存在才新增”。
+> 4. `ArrayList` 按顺序存数据，下标从 0 开始；删除中间项后后面的元素前移。
+> 5. 增强 `for` 遍历时，不直接修改同一个列表；否则可能出现 `ConcurrentModificationException`。
+> 6. MiniPay 中 Payment 管订单流程，Wallet 管真实资金；普通用户入口是 `consumer-bff`。
+>
+> 复习顺序：先跳到“Day 1 课堂复习总览（实际完成版）” → 看练习代码 → 口述自测。前面章节先当词汇预览，遇到看不懂的词直接跳过。
+
+## 进阶预览（暂不要求掌握）
+
 ## 今日目标
 
 完成今天后，你应当能够：
