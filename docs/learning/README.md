@@ -10,12 +10,19 @@
 4. 口述验收题；答不清的内容进入错题区。
 5. 涉及资金、消息、鉴权和数据库的改造必须先写测试，禁止直接修改余额或跨服务访问数据库。
 
+## 每日分支规则
+
+- `8.24` 对应 Day 1，提交只记录 Day 1 的学习成果。
+- `8.25` 对应 Day 2，以 Day 1 为基线，但相对 `8.24` 只新增 Day 2 的计划、练习和验收记录。
+- 后续每天沿用同一规则：当天完成并验收后，创建下一天分支和当天计划；不把新一天的练习混入前一天分支。
+- 每天的业务改造如有发生，也只在它所属的当天分支提交，并写清测试或运行证据。
+
 ## 进度
 
 | 天 | 主题 | 状态 | 主要证据 |
 |---|---|---|---|
 | 1 | 集合与项目地图 | 已完成 | [Day 1 复习与讲义](day-01-project-map-and-collections.md)、[系统地图](system-map.md)、[4 个可运行练习](../../learning-labs/day01-java-basics/) |
-| 2 | Java 语言基础与 Spring Bean | 未开始 | — |
+| 2 | Java 语言基础与 Spring Bean | 已创建，待学习 | [Day 2 计划](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
 | 3 | Spring IOC/AOP/MVC | 未开始 | — |
 | 4 | Java 并发与 Agent Run | 未开始 | — |
 | 5 | JVM、GC 与排障 | 未开始 | — |
