@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MiniPay Payment Local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_CONFIG_IMPORT" value="optional:file:./.env[.properties]" />
+      <env name="SEATA_ENABLED" value="true" />
+      <env name="SEATA_SERVER_ADDR" value="localhost:8091" />
+      <env name="WALLET_BASE_URL" value="http://localhost:8083" />
+    </envs>
+    <module name="payment-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.minipay.payment.PaymentServiceApplication" />
+    <option name="ACTIVE_PROFILES" value="demo-data" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

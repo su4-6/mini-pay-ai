@@ -1,0 +1,14 @@
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.env.deploy
+.env.production
+.secrets/
+.local-secrets/
+target/
+**/target/
+.DS_Store
+Thumbs.db
+backend-*.tar.gz

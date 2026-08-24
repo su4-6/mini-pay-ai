@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MiniPay Identity Local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_CONFIG_IMPORT" value="optional:file:./.env[.properties]" />
+    </envs>
+    <module name="identity-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.minipay.identity.IdentityServiceApplication" />
+    <option name="ACTIVE_PROFILES" value="demo-auth" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MiniPay Agent Local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_CONFIG_IMPORT" value="optional:file:./.env[.properties]" />
+      <env name="PAYMENT_INTERNAL_URL" value="http://localhost:8082" />
+      <env name="COMMERCE_INTERNAL_URL" value="http://localhost:8085" />
+    </envs>
+    <module name="agent-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.minipay.agent.AgentServiceApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

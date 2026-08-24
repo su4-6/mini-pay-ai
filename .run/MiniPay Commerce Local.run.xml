@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MiniPay Commerce Local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_CONFIG_IMPORT" value="optional:file:./.env[.properties]" />
+      <env name="IDENTITY_INTERNAL_URL" value="http://localhost:8081" />
+      <env name="YSHOP_INTERNAL_URL" value="http://localhost:48081" />
+    </envs>
+    <module name="commerce-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.minipay.commerce.CommerceServiceApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

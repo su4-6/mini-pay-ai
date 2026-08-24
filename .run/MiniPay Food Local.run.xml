@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MiniPay Food Local" type="CompoundRunConfigurationType">
+    <toRun name="MiniPay Identity Local" type="SpringBootApplicationConfigurationType" />
+    <toRun name="MiniPay Wallet Local" type="SpringBootApplicationConfigurationType" />
+    <toRun name="MiniPay Payment Local" type="SpringBootApplicationConfigurationType" />
+    <toRun name="MiniPay Commerce Local" type="SpringBootApplicationConfigurationType" />
+    <toRun name="MiniPay Agent Local" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>

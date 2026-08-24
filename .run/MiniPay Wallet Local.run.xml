@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MiniPay Wallet Local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_CONFIG_IMPORT" value="optional:file:./.env[.properties]" />
+      <env name="SEATA_ENABLED" value="true" />
+      <env name="SEATA_SERVER_ADDR" value="localhost:8091" />
+    </envs>
+    <module name="wallet-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.minipay.wallet.WalletServiceApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
