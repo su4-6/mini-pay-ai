@@ -2,11 +2,13 @@
 
 > 分支：`8.26`。明天会先补齐 Day 2 尚未完成的验证码校验链路，再完整学习原定 Day 3 内容；不会因为补课减少 Day 3 的内容。
 
+Day 1—2 的遗漏项目和后续落点见 [补课台账](learning-gap-ledger.md)。
+
 ## 1. 完成标准
 
 结束时你能用自己的话说明：
 
-1. 浏览器发出 `POST /api/v1/auth/consumer/code/verify` 后，请求如何进入 `ConsumerAuthController.verify(...)`。
+1. 区分并画出两条真实请求链：Consumer BFF 的 Filter → Controller 链，以及 Identity 的 Filter → `ConsumerAuthController.verify(...)` 链；不虚构两个服务之间不存在的调用。
 2. `@RequestBody`、`@Valid`、`@PostMapping`、返回对象和 HTTP 响应分别做什么。
 3. `ConsumerSmsChallengeService.consume(challengeId, code)` 如何处理验证码过期、错误次数、锁定和成功。
 4. IoC 是“对象由 Spring 创建和组装”；构造器注入是“类声明需要什么，Spring 提供什么”。
@@ -18,13 +20,14 @@
 
 | 顺序 | 内容 | MiniPay 入口 | 通过标准 |
 |---|---|---|---|
+| 3.0a | Day 1 集合收尾（额外） | `ArrayList`、`LinkedList`、`HashSet` | 能说出三者适用场景，不挤占原 Day 3 内容 |
 | 3.0 | 补齐 Day 2：验证码提交与校验 | `ConsumerAuthController.verify`、`ConsumerSmsChallengeService.consume` | 能说出输入、规则、返回值 |
-| 3.1 | Spring MVC 请求流程 | `@PostMapping`、`@RequestBody`、`@Valid` | 能画出请求到响应的链路 |
+| 3.1 | Spring MVC 与 Filter 请求流程 | `RequestIdWebFilter`、`RequestIdFilter`、两个 Controller | 能画出两条真实请求链 |
 | 3.2 | IoC 与构造器注入复习并加深 | `ConsumerAuthController` 构造器 | 不再把字段声明误解为创建对象 |
-| 3.3 | Bean 生命周期 | 启动类与 Controller/Service Bean | 能说出简化生命周期 |
-| 3.4 | AOP 直觉与项目映射 | 日志、鉴权、事务注解的未来入口 | 能区分横切能力和业务规则 |
+| 3.3 | Bean 生命周期 | 启动类与 Controller/Service Bean | 能说出简化生命周期与观察点 |
+| 3.4 | AOP 与事务项目映射 | `AdminActionAuditService.record` 的 `@Transactional` | 能解释代理在方法前后做什么 |
 | 3.5 | Controller 边界 | `verify(...)` | 能解释为什么它应当变薄 |
-| 3.6 | 小实操和口述验收 | Day 3 练习目录 | 用输入 → Service → 返回值复述 |
+| 3.6 | 小实操、场景题与口述验收 | Day 3 练习目录、请求链图 | 完成练习、10 题与 2 个场景题 |
 
 ## 3. 先补齐：验证码校验链路
 
@@ -46,7 +49,19 @@
 
 验证码的详细 Redis Lua 写法、哈希算法和所有 OAuth 参数不是第一轮重点；先掌握“输入是什么、每条规则保护什么、成功/失败如何返回”。
 
-## 4. 原计划 Day 3：Spring MVC
+## 3A. Day 1 额外收尾：LinkedList 与 HashSet
+
+这 30 分钟是补课，不替换后面的 Spring 内容。
+
+| 集合 | 先记住什么 | MiniPay 类比 |
+|---|---|---|
+| `ArrayList` | 按下标查找快，插入/删除中间项会移动元素 | 固定顺序的页面步骤 |
+| `LinkedList` | 节点前后连接；先只知道它适合频繁在已知位置插入/删除 | 不作为业务数据库或 MQ 的替代品 |
+| `HashSet` | 只保留不重复元素；底层可借助 HashMap 的 key 去重思想 | 单 JVM 内临时去重，不替代 Inbox/唯一约束 |
+
+HashMap 的位运算、扩容、树化会放到 Day 4；不要在 Day 3 抢学并发底层。
+
+## 4. 原计划 Day 3：Spring MVC 与 Filter
 
 ### 4.1 一次请求的简化路径
 
@@ -61,7 +76,31 @@ HTTP 请求
 
 今天不需要背 `DispatcherServlet` 内部源码。你需要能指出：Controller 是 HTTP 边界；Service 是业务规则的位置。
 
-### 4.2 参数与返回值
+### 4.2 两条真实 MiniPay 请求链
+
+不要把“有 BFF”误解为“所有 Identity 登录接口都经过 BFF”。先分别追踪项目中真实存在的两条链：
+
+```text
+浏览器 → consumer-bff 的 RequestIdWebFilter → SecuritySessionController(/api/v1/csrf)
+
+浏览器或调用方 → identity-service 的 RequestIdFilter
+  → ConsumerAuthController(/api/v1/auth/consumer/code/verify)
+  → ConsumerSmsChallengeService.consume(...)
+```
+
+`RequestIdFilter` 的作用是给一次请求准备或透传 `X-Request-Id`，让后续 Controller、日志和错误响应可以关联同一请求；它不是业务登录规则。
+
+### 4.3 当天只读源码入口
+
+按以下顺序阅读，每次只打开一个文件：
+
+1. `services/consumer-bff/src/main/java/com/minipay/consumerbff/infrastructure/security/RequestIdWebFilter.java`：认识 BFF 的 Filter 概念。
+2. `services/consumer-bff/src/main/java/com/minipay/consumerbff/interfaces/rest/SecuritySessionController.java`：认识 BFF 的一个真实 Controller；它是 CSRF 会话入口，不冒充为验证码登录接口。
+3. `services/identity-service/src/main/java/com/minipay/identity/infrastructure/security/RequestIdFilter.java`：认识 Identity 服务如何在进入 Controller 前准备 requestId。
+
+验证码校验仍沿用 Day 2 的 `ConsumerAuthController.verify(...)` 与 `ConsumerSmsChallengeService.consume(...)`，只在补齐环节阅读。
+
+### 4.4 参数与返回值
 
 - `@RequestBody VerifyCodeRequest body`：把请求 JSON 交给 Java 对象 `body`。
 - `@Valid`：按请求对象已经定义的规则检查输入。
@@ -85,6 +124,8 @@ HTTP 请求
 
 暂不深挖循环依赖、三级缓存与源码细节。
 
+当天会做一个不改业务代码的观察：在启动类、`@RestController` 和 `@Service` 上分别标出“被扫描发现”“被创建并注入”“开始可接收请求”三个时刻。它用来建立顺序感，不要求调试 Spring 源码。
+
 ## 6. 原计划 Day 3：AOP 直觉
 
 AOP 解决的是“很多地方都需要、但不是某一条业务独有规则”的能力。
@@ -97,13 +138,22 @@ AOP 解决的是“很多地方都需要、但不是某一条业务独有规则�
 
 不能把所有代码都塞进 AOP：验证码是否正确、余额是否足够等，仍是明确的业务规则，应留在 Service/领域能力中。
 
+项目中的第一处 AOP/事务证据使用：`AdminActionAuditService.record(...)` 上的 `@Transactional(propagation = REQUIRES_NEW)`。Spring 会通过代理在调用该方法前后建立并完成独立事务；先理解“方法执行前后自动加能力”，不深挖传播级别或代理源码。项目目前不需要人为添加一个 `@Aspect` 才能学习 AOP。
+
 ## 7. 架构观察：厚 Controller
 
 `ConsumerAuthController.verify(...)` 目前直接编排验证码校验、账户处理、授权码签发和审计。根据项目规范，Controller 应主要负责协议转换、输入校验和调用用例；未来应提取一个 Application Service。
 
 明天只学习并画出边界，不重构。正确顺序是：先读懂 → 补测试/验证 → 再做小范围提取 → 验证回归。
 
-## 8. 明日口述题
+## 8. 明日实操与验收
+
+1. 画两条请求箭头图：BFF 的 CSRF Filter/Controller 链，Identity 的验证码校验 Filter/Controller/Service 链；每个箭头写一句职责。
+2. 在 Day 3 练习区创建一个最小 Java 文件，模拟 `输入对象 → Service 方法 → 返回对象`；只在讲到该环节时创建并运行。
+3. 在现有 `AdminActionAuditService.record(...)` 上标注 `@Transactional` 的作用范围；只加学习笔记，不改变事务配置。
+4. 用一次失败验证码场景口述：输入错误 → `consume` 判定 → 异常/响应，不能把它说成 AOP 或 Filter 的职责。
+
+## 9. 明日口述题（10 题）
 
 1. 前端的 JSON 是怎样变成 `VerifyCodeRequest body` 的？
 2. `consume` 成功与失败各返回什么？
@@ -111,5 +161,13 @@ AOP 解决的是“很多地方都需要、但不是某一条业务独有规则�
 4. 什么是 IoC？为什么 Controller 不直接 `new` Service？
 5. 构造器注入发生在 Bean 生命周期的哪个阶段？
 6. AOP 适合放验证码“是否正确”的规则吗？为什么？
-7. 为什么说 `verify(...)` 偏厚？之后应该移动到哪里？
+7. `RequestIdFilter` 为什么不是“登录业务代码”？
+8. Bean 生命周期中，构造器注入发生在什么时候？
+9. `@Transactional` 为什么能作为 AOP 的例子？
+10. 为什么说 `verify(...)` 偏厚？之后应该移动到哪里？
+
+## 10. 场景题（2 题）
+
+1. 前端拿到验证码提交接口的失败响应，但日志难以关联。你从请求进入到 Controller，怎样利用 `X-Request-Id` 判断这是不是同一次请求？
+2. 审计记录必须独立保存，即使外层业务之后失败也希望保留审计。为什么 `REQUIRES_NEW` 可能合适？先说目标和边界，不要求背传播级别源码。
 
