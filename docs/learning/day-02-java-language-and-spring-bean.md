@@ -139,7 +139,21 @@ java 文件名.java
 9. 为什么 `ConsumerAuthController` 不自己 `new ConsumerSmsChallengeService()`？
 10. 从 Identity 服务启动到一个 Controller 收到请求，至少说出两个关键注解。
 
-## 8. 当天完成后更新什么
+## 8. 阶段完成记录（2026-08-25）
+
+### 已完成的练习与源码阅读
+
+1. 已运行 `StringIntegerPractice.java`、`GenericPractice.java`、`ExceptionPractice.java`。
+2. 未单独创建“注解与反射”练习；改为直接阅读 MiniPay 的真实 `@SpringBootApplication`、`@RestController`、`@Service`，学习效果更贴近项目。
+3. 已从启动类跟到 `ConsumerAuthController.send(...)`，再跟到 `ConsumerSmsChallengeService.create(...)`。
+4. 已在这三个真实源码文件中增加学习注释，覆盖 Bean、构造器注入、请求参数、返回值、Redis 临时状态和异常路径；只添加注释，不改变业务逻辑。
+5. 阅读时发现 `verify(...)` Controller 偏厚：它负责登录业务编排，未来应迁移到 Application Service；本日只记录问题，不在未建立测试前重构。
+
+### 明日先补齐，再进入原计划 Day 3
+
+验证码提交和校验的 `consume(...)` 链路、`/code/verify` 的 HTTP 处理、以及最小化的“输入 → Service → return → 响应”练习，明日先补齐；随后继续原计划 Day 3 的 IOC、AOP、Bean 生命周期和 Spring MVC，不缩减原内容。
+
+## 9. 当天完成后更新什么
 
 Day 2 结束时：
 

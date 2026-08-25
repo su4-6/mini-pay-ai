@@ -22,8 +22,8 @@
 | 天 | 主题 | 状态 | 主要证据 |
 |---|---|---|---|
 | 1 | 集合与项目地图 | 已完成 | [Day 1 复习与讲义](day-01-project-map-and-collections.md)、[系统地图](system-map.md)、[4 个可运行练习](../../learning-labs/day01-java-basics/) |
-| 2 | Java 语言基础与 Spring Bean | 已创建，待学习 | [Day 2 计划](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
-| 3 | Spring IOC/AOP/MVC | 未开始 | — |
+| 2 | Java 语言基础与 Spring Bean | 基础部分已完成，剩余内容转入明日补齐 | [Day 2 记录](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
+| 3 | 原计划：IOC、AOP、Bean 生命周期、Spring MVC | 未开始 | — |
 | 4 | Java 并发与 Agent Run | 未开始 | — |
 | 5 | JVM、GC 与排障 | 未开始 | — |
 | 6 | MySQL 与资金数据 ownership | 未开始 | — |
@@ -90,3 +90,26 @@
 - 能区分 `HashMap`、`ConcurrentHashMap` 和 `ArrayList` 的适用场景。
 - 能说明 Payment 不能直接修改 Wallet 数据库的根本原因是数据 ownership 和服务边界，而非单纯“没有权限”。
 - 能说出普通用户 BFF 是 `consumer-bff`。
+
+## Day 2 阶段记录（2026-08-25）
+
+### 已完成
+
+1. 能区分 `String`、`int`、`Integer` 和 `null`；理解泛型限制容器元素类型，练习了 `List<Integer>`。
+2. 用 `Integer.parseInt` 制造 `NumberFormatException`，再用精确的 `catch (NumberFormatException e)` 处理可预期输入错误。
+3. 读懂 Identity 启动入口：`@SpringBootApplication`、`SpringApplication.run(...)`、Spring Bean 与构造器注入。
+4. 跟踪发送验证码调用链：`POST /code/send` → `ConsumerAuthController.send(...)` → `ConsumerSmsChallengeService.create(...)` → Redis / 短信渠道 → `ConsumerSmsChallenge` → HTTP JSON 响应。
+5. 理解验证码服务中的手机号校验、锁定、手机号/IP 限流、重发等待、验证码来源选择、`challengeId`、Redis 键前缀、`previous`、手动删除与 `expire` 自动过期、成功返回与失败清理。
+6. 发现并记录一个架构优化点：`ConsumerAuthController.verify(...)` 编排了验证码校验、账户处理、授权码签发和审计，Controller 偏厚；后续应迁到 Application Service，当前先不改动。
+
+### 代码与运行证据
+
+- [StringIntegerPractice.java](../../learning-labs/day02-java-spring-basics/StringIntegerPractice.java)：运行验证 `Integer` 可为 `null`，`String`、`int`、`Integer` 分别输出预期值。
+- [GenericPractice.java](../../learning-labs/day02-java-spring-basics/GenericPractice.java)：运行输出 `95`、`2`，验证 `List<Integer>`。
+- [ExceptionPractice.java](../../learning-labs/day02-java-spring-basics/ExceptionPractice.java)：先观察非法文本产生 `NumberFormatException`，再处理合法输入 `100`。
+- [IdentityServiceApplication.java](../../services/identity-service/src/main/java/com/minipay/identity/IdentityServiceApplication.java)、[ConsumerAuthController.java](../../services/identity-service/src/main/java/com/minipay/identity/interfaces/rest/ConsumerAuthController.java)、[ConsumerSmsChallengeService.java](../../services/identity-service/src/main/java/com/minipay/identity/application/service/ConsumerSmsChallengeService.java)：已加入 Day 2 学习注释，不改变业务逻辑。
+
+### 明日先补齐，再进入原计划 Day 3
+
+- 先补齐 `consume(challengeId, code)`：验证码提交后的过期、错误次数、锁定与成功处理；以及 Spring MVC 请求进入、参数绑定和响应转换。
+- 随后完整执行原计划 Day 3：IOC、AOP、Bean 生命周期与 Spring MVC；不因补课而删减 Day 3 内容。

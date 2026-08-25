@@ -26,9 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// Spring 会把这个类创建并管理为 Bean；它负责接收 HTTP 请求，不在这里写短信业务规则。
 @RestController
+// 这个 Controller 下所有接口共用的路径前缀。
 @RequestMapping("/api/v1/auth/consumer")
 public class ConsumerAuthController {
+    // 这些字段是 Controller 长期保存的“依赖”。它们现在只是字段声明，不是在这里创建对象。
+    // Spring 创建 Controller Bean 时会把已经准备好的其他 Bean 传入构造器，再保存进这些字段。
+    // challenges 专门负责短信验证码业务；后面的 send 方法只把请求数据转交给它。
     private final ConsumerSmsChallengeService challenges;
     private final PhoneNumberService phoneNumbers;
     private final ConsumerAccountRepository accounts;
@@ -43,6 +48,9 @@ public class ConsumerAuthController {
             ConsumerAuthorizationCodeService authorizationCodes,
             LoginAuditRepository audits,
             MerchantLoginPasswordService merchantPasswords) {
+        // 构造器参数是 Spring 按类型传进来的实际对象；这种方式叫构造器注入。
+        // 左边 this.challenges 是本 Controller 的字段；右边 challenges 是构造器收到的 Service Bean。
+        // 这一句不是创建 Service，而是把 Spring 已经准备好的对象保存下来，供本 Controller 后续使用。
         this.challenges = challenges;
         this.phoneNumbers = phoneNumbers;
         this.accounts = accounts;
@@ -51,10 +59,18 @@ public class ConsumerAuthController {
         this.merchantPasswords = merchantPasswords;
     }
 
+    // 与类上的前缀拼接后，完整路由是：POST /api/v1/auth/consumer/code/send。
+    // App/前端通过 HTTP 请求触发它，不是前端直接调用 Java 方法。
     @PostMapping("/code/send")
     public ResponseEntity<ConsumerSmsChallenge> send(
             @Valid @RequestBody SendCodeRequest body,
             HttpServletRequest request) {
+        // @RequestBody：把前端 JSON 转成 body；@Valid：先校验手机号等输入格式。
+        // request 代表本次 HTTP 请求，request.getRemoteAddr() 能得到客户端 IP。
+        // Java 先执行内层 create(...)：手机号和 IP 是传给 Service 的输入；其返回结果才会交给外层 body(...)
+        // Java 先执行内层 create(...)：body.mobile()、request.getRemoteAddr() 是传给 Service 的两个输入。
+        // create(...) 完成后返回 ConsumerSmsChallenge；外层 body(...) 接到的才是这个返回结果，不是手机号和 IP。
+        // Controller 只负责接收、校验、转交；真正的“发验证码”规则在 Service 中。
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(challenges.create(body.mobile(), request.getRemoteAddr()));
     }
