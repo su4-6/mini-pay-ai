@@ -4,6 +4,16 @@
 
 Day 1—2 的遗漏项目和后续落点见 [补课台账](learning-gap-ledger.md)。
 
+## 0. 开场复习（30 分钟）
+
+先不看笔记，依次回答：
+
+1. `HashMap`、`ArrayList`、`ConcurrentHashMap` 分别解决什么问题？
+2. 为什么 Payment 不能直接修改 Wallet 数据库？
+3. Spring 为什么把 `ConsumerSmsChallengeService` 放进 `ConsumerAuthController` 的构造器，而不是 Controller 自己 `new`？
+
+答完后再核对 Day 1/2 笔记。答错内容写入当天错题区；随后进行本日的 `LinkedList`/`HashSet` 收尾和验证码校验链，不减少 Day 3 原定内容。
+
 ## 1. 完成标准
 
 结束时你能用自己的话说明：
