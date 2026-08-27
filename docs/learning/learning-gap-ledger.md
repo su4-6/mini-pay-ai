@@ -32,6 +32,10 @@
 | Day 3 原计划 | Filter/Controller 请求链、IoC/构造器注入、Bean 生命周期、AOP/事务、Controller 边界 | completed | 已完成 10 道口述题、2 道场景题，并有身份服务编译/定向测试证据。 |
 | Day 3 原计划 | `MvcServiceFlowPractice.java`：输入对象 → Service → 返回对象最小练习 | scheduled carryover | Day 4 开场复习先完成并记录运行输出；Day 4 的并发新内容不减少。 |
 
+## Day 4 初始化（`8.28`）
+
+Day 4 开场必须先完成 `MvcServiceFlowPractice.java`，随后按原 Day 4 范围学习 HashMap 深入、Java 并发与 Agent Run；不得因为补做这一个小练习而删减并发内容。
+
 ## 使用规则
 
 1. 每天开始前先查看本台账中安排到当天的项目。

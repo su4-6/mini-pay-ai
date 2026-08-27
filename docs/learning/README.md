@@ -15,6 +15,8 @@
 - `8.24` 对应 Day 1，提交只记录 Day 1 的学习成果。
 - `8.25` 对应 Day 2，以 Day 1 为基线，但相对 `8.24` 只新增 Day 2 的计划、练习和验收记录。
 - `8.26` 对应 Day 3，以 Day 2 为基线；先补齐 Day 2 剩余内容，再完整完成原计划的 Day 3 内容。
+- `8.27` 是继续完成 Day 3 的实际学习日期，不补建空分支、不把 Day 4 写进 `8.26`。
+- `8.28` 对应 Day 4，以 `8.26` 的完成提交为基线；先完成台账中的最小 MVC 练习，再完整进入并发内容。
 - 后续每天沿用同一规则：当天完成并验收后，创建下一天分支和当天计划；不把新一天的练习混入前一天分支。
 - 每天的业务改造如有发生，也只在它所属的当天分支提交，并写清测试或运行证据。
 
@@ -25,7 +27,7 @@
 | 1 | 集合与项目地图 | 已完成 | [Day 1 复习与讲义](day-01-project-map-and-collections.md)、[系统地图](system-map.md)、[4 个可运行练习](../../learning-labs/day01-java-basics/) |
 | 2 | Java 语言基础与 Spring Bean | 基础部分已完成，剩余内容转入明日补齐 | [Day 2 记录](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
 | 3 | IOC、AOP、Bean 生命周期、Spring MVC | 核心内容已完成；最小 MVC 小练习转入 Day 4 开场复习 | [Day 3 记录](day-03-spring-ioc-aop-mvc.md)、[Day 3 练习区](../../learning-labs/day03-spring-ioc-aop-mvc/) |
-| 4 | Java 并发与 Agent Run | 未开始 | — |
+| 4 | Java 并发与 Agent Run | 计划已创建，待学习 | [Day 4 计划](day-04-java-concurrency-and-agent-run.md)、[Day 4 练习区](../../learning-labs/day04-java-concurrency/) |
 | 5 | JVM、GC 与排障 | 未开始 | — |
 | 6 | MySQL 与资金数据 ownership | 未开始 | — |
 | 7 | Redis、Session 与 JWT | 未开始 | — |
