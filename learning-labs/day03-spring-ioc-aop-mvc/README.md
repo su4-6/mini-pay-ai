@@ -10,6 +10,12 @@
 4. 用构造器注入复习 IoC 和 Bean 生命周期。
 5. 以 `AdminActionAuditService.record(...)` 的 `@Transactional` 学习 AOP 的用途和边界。
 
-计划中的最小练习：`MvcServiceFlowPractice.java`。讲到“输入 → Service → 返回值”时再创建；文件将记录目的、运行命令和实际输出。
+## 实际练习记录
 
-明天每写一个练习文件都会在这里补充文件名、目的和运行结果。
+| 文件 | 目的 | 实际运行结果 |
+|---|---|---|
+| `CollectionReviewPractice.java` | 回顾 `LinkedList` 的按顺序取值与 `HashSet` 的去重；不参与 MiniPay 正式构建。 | 输出 `支付`、`2`：第二个流程步骤为“支付”，重复加入的 `Pay` 权限只保留一份。 |
+
+## 明确转入 Day 4 开场复习
+
+原计划中的 `MvcServiceFlowPractice.java` 尚未创建。它会在 Day 4 新内容开始前补做，用最小代码模拟“输入对象 → Service 方法 → 返回对象”；Day 4 原有的并发内容不减少。

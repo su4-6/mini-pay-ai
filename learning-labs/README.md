@@ -4,7 +4,7 @@
 
 - Day 1「集合与项目地图」已完成：[day01-java-basics](day01-java-basics/)。
 - Day 2「Java 语言基础与 Spring Bean」已完成基础练习：[day02-java-spring-basics](day02-java-spring-basics/)。验证码校验链路会在 Day 3 开始时先补齐。
-- Day 3「IOC、AOP、Bean 生命周期、Spring MVC」学习计划已创建：[day03-spring-ioc-aop-mvc](day03-spring-ioc-aop-mvc/)。
+- Day 3「IOC、AOP、Bean 生命周期、Spring MVC」核心学习已完成：[day03-spring-ioc-aop-mvc](day03-spring-ioc-aop-mvc/)。已运行 `CollectionReviewPractice.java`；原计划的 MVC 输入→Service→返回值小练习转入 Day 4 开场复习。
 - 每个 `.java` 文件都是独立小程序，不参与 MiniPay 正式 Maven 构建。
 
 运行当天任一练习的通用方式：

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.minipay.identity.application.service.LoginRejectedException;
+import com.minipay.identity.application.port.ConsumerAuthorizationCodePort.IssuedAuthorizationCode;
 import com.minipay.identity.domain.model.ConsumerPrincipal;
 import java.time.Duration;
 import java.time.Instant;
@@ -46,7 +47,7 @@ class ConsumerAuthorizationCodeServiceTest {
                 new ConsumerPrincipal(UUID.randomUUID(), "米灵用户", false);
         Instant before = Instant.now();
 
-        ConsumerAuthorizationCodeService.IssuedAuthorizationCode issued = service.issue(
+        IssuedAuthorizationCode issued = service.issue(
                 consumer,
                 CLIENT_ID,
                 REDIRECT_URI,

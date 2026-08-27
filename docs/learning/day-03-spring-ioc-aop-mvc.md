@@ -24,7 +24,7 @@ Day 1—2 的遗漏项目和后续落点见 [补课台账](learning-gap-ledger.m
 4. IoC 是“对象由 Spring 创建和组装”；构造器注入是“类声明需要什么，Spring 提供什么”。
 5. AOP 的直觉：在不把重复代码散落到每个业务方法里的前提下，为方法增加日志、鉴权或事务等横切能力。
 6. Bean 生命周期先掌握简化顺序：扫描发现 → 创建对象 → 注入依赖 → 初始化 → 可使用 → 应用关闭时销毁。
-7. 能指出 `ConsumerAuthController.verify(...)` 目前偏厚的原因，并说明应在建立测试后迁到 Application Service，而不是今天直接重构。
+7. 能指出 `ConsumerAuthController.verify(...)` 曾偏厚的原因，并说明它已在建立测试后提取到 Application Service。
 
 ## 2. 明天的完整顺序
 
@@ -152,18 +152,54 @@ AOP 解决的是“很多地方都需要、但不是某一条业务独有规则�
 
 ## 7. 架构观察：厚 Controller
 
-`ConsumerAuthController.verify(...)` 目前直接编排验证码校验、账户处理、授权码签发和审计。根据项目规范，Controller 应主要负责协议转换、输入校验和调用用例；未来应提取一个 Application Service。
+> 本日发现但暂不修改的接口契约问题，统一记录在 [项目待修正台账](project-improvement-ledger.md)。它与“补课台账”不同：前者记录项目代码/文档将来要修正的事项，后者记录个人尚未学完的知识点。
 
-明天只学习并画出边界，不重构。正确顺序是：先读懂 → 补测试/验证 → 再做小范围提取 → 验证回归。
+`ConsumerAuthController.verify(...)` 原先直接编排验证码校验、账户处理、授权码签发和审计。根据项目规范，Controller 应主要负责协议转换、输入校验和调用用例。
 
-## 8. 明日实操与验收
+用户已确认采用小范围改造，按“先读懂 → 补测试/验证 → 小范围提取 → 验证回归”完成了本次提取。
 
-1. 画两条请求箭头图：BFF 的 CSRF Filter/Controller 链，Identity 的验证码校验 Filter/Controller/Service 链；每个箭头写一句职责。
-2. 在 Day 3 练习区创建一个最小 Java 文件，模拟 `输入对象 → Service 方法 → 返回对象`；只在讲到该环节时创建并运行。
-3. 在现有 `AdminActionAuditService.record(...)` 上标注 `@Transactional` 的作用范围；只加学习笔记，不改变事务配置。
-4. 用一次失败验证码场景口述：输入错误 → `consume` 判定 → 异常/响应，不能把它说成 AOP 或 Filter 的职责。
+### 7.1 本次小范围提取（8.26）
 
-## 9. 明日口述题（10 题）
+消费者短信验证码登录的用例编排已提取到：
+
+`services/identity-service/src/main/java/com/minipay/identity/application/service/ConsumerSmsLoginApplicationService.java`
+
+现在的职责边界：
+
+```text
+ConsumerAuthController
+  HTTP 路由、JSON/@Valid 校验、读取 IP/User-Agent/requestId、响应 JSON
+  ↓ ConsumerSmsLoginCommand
+ConsumerSmsLoginApplicationService
+  验证码核验 → 查找/创建账号 → 记录验证手机号 → 签发授权码 → 登录审计
+  （该方法是本登录用例的本地事务边界）
+  ↓ ConsumerSmsLoginResult
+ConsumerAuthController
+  AuthorizationCodeResponse
+```
+
+应用服务只依赖三个 `application.port`：`ConsumerAccountPort`、`ConsumerAuthorizationCodePort`、`LoginAuditPort`；MySQL Repository 与 OAuth 安全组件在 `infrastructure` 中实现这些 Port。这样依赖方向保持为 `interfaces → application ← infrastructure`。
+
+本次没有改变验证码、账号或授权码规则。`verify(...)` 现在是本登录用例的本地事务边界；失败登录审计由 `LoginAuditRepository.appendLogin(...)` 的 `REQUIRES_NEW` 独立事务保存，避免外层登录失败时审计也被回滚。
+
+验证证据：`ConsumerSmsLoginApplicationServiceTest` 覆盖成功登录链路与验证码失败审计链路；`ConsumerAuthorizationCodeServiceTest` 覆盖授权码与 PKCE 规则，共 4/4 通过。项目要求 JDK 21；本机只有 JDK 26，本次临时跳过版本检查、仍以 `release 21` 完成编译和测试，未修改项目配置。
+
+## 8. Day 3 收尾与验收（2026-08-27）
+
+### 已完成的源码与口述证据
+
+1. 已区分两条真实请求链：浏览器访问 BFF 时走 `RequestIdWebFilter → SecuritySessionController`；验证码登录请求进入 Identity 时走 `RequestIdFilter → ConsumerAuthController → ConsumerSmsLoginApplicationService → ConsumerSmsChallengeService`。两条链不是彼此必经的远程调用。
+2. 已完成验证码失败场景口述：`consume(...)` 抛出 `LoginRejectedException`，外层 `try-catch` 记录失败审计后重新抛出；Filter 只负责请求编号，AOP 只负责事务的开始/提交/回滚，不能代替验证码规则。
+3. 已完成 IoC、构造器注入、Bean 生命周期、Port/Repository 边界、`@Transactional` 与 `REQUIRES_NEW` 的口述校验。
+4. 已完成 10 道口述题与 2 道场景题。首次遗漏了 Filter，已纠正为“前端请求 → Filter → Controller → Application Service → 返回 HTTP 响应”。
+5. 已运行 `CollectionReviewPractice.java`，输出“支付”“2”。
+
+### 不伪装为完成的项目
+
+1. `MvcServiceFlowPractice.java` 尚未创建和运行；已转为 Day 4 开场复习，先做“输入对象 → Service → 返回对象”最小练习，再进入 Day 4 原有并发课程。
+2. Day 3 没有新增待修正架构问题；`IMP-001` 的 OpenAPI 与实际响应字段不一致仍等待前端调用证据，不能凭感觉修改。
+
+## 9. Day 3 口述题（已完成）
 
 1. 前端的 JSON 是怎样变成 `VerifyCodeRequest body` 的？
 2. `consume` 成功与失败各返回什么？
@@ -176,7 +212,7 @@ AOP 解决的是“很多地方都需要、但不是某一条业务独有规则�
 9. `@Transactional` 为什么能作为 AOP 的例子？
 10. 为什么说 `verify(...)` 偏厚？之后应该移动到哪里？
 
-## 10. 场景题（2 题）
+## 10. 场景题（已完成）
 
 1. 前端拿到验证码提交接口的失败响应，但日志难以关联。你从请求进入到 Controller，怎样利用 `X-Request-Id` 判断这是不是同一次请求？
 2. 审计记录必须独立保存，即使外层业务之后失败也希望保留审计。为什么 `REQUIRES_NEW` 可能合适？先说目标和边界，不要求背传播级别源码。

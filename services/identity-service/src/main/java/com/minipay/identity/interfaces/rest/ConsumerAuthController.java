@@ -2,16 +2,9 @@ package com.minipay.identity.interfaces.rest;
 
 import com.minipay.identity.application.service.ConsumerSmsChallengeService;
 import com.minipay.identity.application.service.ConsumerSmsChallengeService.ConsumerSmsChallenge;
-import com.minipay.identity.application.service.ConsumerSmsChallengeService.VerifiedMobile;
-import com.minipay.identity.application.service.LoginRejectedException;
-import com.minipay.identity.application.service.MerchantLoginPasswordService;
-import com.minipay.identity.application.service.PhoneNumberService;
-import com.minipay.identity.domain.model.ConsumerPrincipal;
-import com.minipay.identity.infrastructure.persistence.ConsumerAccountRepository;
-import com.minipay.identity.infrastructure.persistence.ConsumerAccountRepository.ConsumerAccountDisabledException;
-import com.minipay.identity.infrastructure.persistence.LoginAuditRepository;
-import com.minipay.identity.infrastructure.security.ConsumerAuthorizationCodeService;
-import com.minipay.identity.infrastructure.security.ConsumerAuthorizationCodeService.IssuedAuthorizationCode;
+import com.minipay.identity.application.service.ConsumerSmsLoginApplicationService;
+import com.minipay.identity.application.service.ConsumerSmsLoginApplicationService.ConsumerSmsLoginCommand;
+import com.minipay.identity.application.service.ConsumerSmsLoginApplicationService.ConsumerSmsLoginResult;
 import com.minipay.identity.infrastructure.security.RequestIdFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -35,28 +28,17 @@ public class ConsumerAuthController {
     // Spring 创建 Controller Bean 时会把已经准备好的其他 Bean 传入构造器，再保存进这些字段。
     // challenges 专门负责短信验证码业务；后面的 send 方法只把请求数据转交给它。
     private final ConsumerSmsChallengeService challenges;
-    private final PhoneNumberService phoneNumbers;
-    private final ConsumerAccountRepository accounts;
-    private final ConsumerAuthorizationCodeService authorizationCodes;
-    private final LoginAuditRepository audits;
-    private final MerchantLoginPasswordService merchantPasswords;
+    // verify 接口把完整的“短信登录用例”交给它：验证码核验、账号、授权码和审计都不留在 Controller。
+    private final ConsumerSmsLoginApplicationService consumerSmsLogin;
 
     public ConsumerAuthController(
             ConsumerSmsChallengeService challenges,
-            PhoneNumberService phoneNumbers,
-            ConsumerAccountRepository accounts,
-            ConsumerAuthorizationCodeService authorizationCodes,
-            LoginAuditRepository audits,
-            MerchantLoginPasswordService merchantPasswords) {
+            ConsumerSmsLoginApplicationService consumerSmsLogin) {
         // 构造器参数是 Spring 按类型传进来的实际对象；这种方式叫构造器注入。
         // 左边 this.challenges 是本 Controller 的字段；右边 challenges 是构造器收到的 Service Bean。
         // 这一句不是创建 Service，而是把 Spring 已经准备好的对象保存下来，供本 Controller 后续使用。
         this.challenges = challenges;
-        this.phoneNumbers = phoneNumbers;
-        this.accounts = accounts;
-        this.authorizationCodes = authorizationCodes;
-        this.audits = audits;
-        this.merchantPasswords = merchantPasswords;
+        this.consumerSmsLogin = consumerSmsLogin;
     }
 
     // 与类上的前缀拼接后，完整路由是：POST /api/v1/auth/consumer/code/send。
@@ -79,67 +61,31 @@ public class ConsumerAuthController {
     public AuthorizationCodeResponse verify(
             @Valid @RequestBody VerifyCodeRequest body,
             HttpServletRequest request) {
-        String auditIdentifier = body.challengeId();
-        try {
-            VerifiedMobile verified = challenges.consume(body.challengeId(), body.code());
-            auditIdentifier = verified.mobile();
-            ConsumerPrincipal consumer = accounts.findOrCreate(
-                    phoneNumbers.hash(verified.mobile()),
-                    RequestIdFilter.get(request));
-            accounts.recordVerifiedPhone(
-                    consumer.userId(), verified.mobile(), phoneNumbers.mask(verified.mobile()));
-            IssuedAuthorizationCode code = authorizationCodes.issue(
-                    consumer,
-                    body.clientId(),
-                    body.redirectUri(),
-                    body.codeChallenge(),
-                    body.codeChallengeMethod(),
-                    body.deviceId());
-            audits.appendLogin(
-                    consumer.userId(),
-                    auditIdentifier,
-                    "CONSUMER_SMS",
-                    "SUCCESS",
-                    request.getRemoteAddr(),
-                    request.getHeader("User-Agent"),
-                    RequestIdFilter.get(request));
-            return new AuthorizationCodeResponse(
-                    code.authorizationCode(),
-                    code.expiresAt(),
-                    consumer.userId(),
-                    consumer.payPasswordSet(),
-                    !consumer.onboardingCompleted(),
-                    consumer.realNameStatus(),
-                    consumer.realNameVerified(),
-                    verified.mobile(),
-                    merchantPasswords.configured(consumer.userId()));
-        } catch (ConsumerAccountDisabledException exception) {
-            auditFailure(auditIdentifier, "DISABLED", request);
-            throw new LoginRejectedException("ACCOUNT_DISABLED");
-        } catch (LoginRejectedException exception) {
-            auditFailure(auditIdentifier, auditResult(exception.code()), request);
-            throw exception;
-        }
-    }
-
-    private void auditFailure(String identifier, String result, HttpServletRequest request) {
-        audits.appendLogin(
-                null,
-                identifier,
-                "CONSUMER_SMS",
-                result,
+        // Controller 只做两件事：把 HTTP 输入整理为 Command，再把业务 Result 整理为 HTTP 响应。
+        // body 中的 challengeId/code 是前端提交的输入；IP、User-Agent、requestId 是本次 HTTP 请求的附带信息。
+        // 真正的验证码校验、账号处理、授权码签发和审计都交给 Application Service，不在接口层展开。
+        ConsumerSmsLoginResult result = consumerSmsLogin.verify(new ConsumerSmsLoginCommand(
+                body.challengeId(),
+                body.code(),
+                body.clientId(),
+                body.redirectUri(),
+                body.codeChallenge(),
+                body.codeChallengeMethod(),
+                body.deviceId(),
                 request.getRemoteAddr(),
                 request.getHeader("User-Agent"),
-                RequestIdFilter.get(request));
-    }
-
-    private String auditResult(String code) {
-        return switch (code) {
-            case "SMS_LOCKED", "AUTH_RATE_LIMITED", "SMS_RESEND_TOO_SOON" -> "RATE_LIMITED";
-            case "ACCOUNT_DISABLED" -> "DISABLED";
-            case "PKCE_INVALID", "OAUTH_CLIENT_INVALID" -> "CLIENT_REJECTED";
-            default -> "SMS_FAILED";
-        };
+                RequestIdFilter.get(request)));
+        // result 是服务内部的登录结果；这里明确挑选并排列接口需要返回给前端的字段，Spring 再把它转为 JSON。
+        return new AuthorizationCodeResponse(
+                result.authorizationCode(),
+                result.expiresAt(),
+                result.userId(),
+                result.payPasswordSet(),
+                result.onboardingRequired(),
+                result.realNameStatus(),
+                result.realNameVerified(),
+                result.phone(),
+                result.merchantPasswordConfigured());
     }
 
     public record SendCodeRequest(
@@ -157,6 +103,7 @@ public class ConsumerAuthController {
             @NotBlank @Size(max = 128) String deviceId) {
     }
 
+    // 这组字段是接口对前端的合同：是否需要或允许某字段，应由 OpenAPI、前端实际使用和接口测试共同确认。
     public record AuthorizationCodeResponse(
             String authorizationCode,
             Instant expiresAt,

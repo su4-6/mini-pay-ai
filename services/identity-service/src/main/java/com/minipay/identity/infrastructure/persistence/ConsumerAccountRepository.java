@@ -2,6 +2,8 @@ package com.minipay.identity.infrastructure.persistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minipay.identity.application.port.ConsumerAccountPort;
+import com.minipay.identity.application.service.ConsumerAccountDisabledException;
 import com.minipay.identity.application.service.UuidV7;
 import com.minipay.identity.application.service.PhoneDisclosureCipher;
 import com.minipay.identity.domain.model.ConsumerPrincipal;
@@ -12,8 +14,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+// 这是 ConsumerAccountPort 的 MySQL 实现：它只负责账户数据的读取/写入，不负责 HTTP、验证码规则、
+// 授权码或审计编排；这些职责属于 Controller、验证码 Service 和 Application Service。
 @Repository
-public class ConsumerAccountRepository {
+public class ConsumerAccountRepository implements ConsumerAccountPort {
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
     private final PhoneDisclosureCipher phoneCipher;
@@ -28,12 +32,15 @@ public class ConsumerAccountRepository {
     }
 
     @Transactional
+    @Override
     public ConsumerPrincipal findOrCreate(byte[] phoneHash, String traceId) {
+        // 先按已验证手机号的哈希查找；哈希用于匹配账户，避免把明文手机号用作查询键。
         Optional<ConsumerPrincipal> existing = findByPhoneHash(phoneHash);
         if (existing.isPresent()) {
             return requireActive(existing.get());
         }
 
+        // 首次登录没有账户时才创建。INSERT IGNORE 与后续 FOR UPDATE 查询共同处理并发首次注册的竞争。
         UUID candidateId = UuidV7.generate();
         int inserted = jdbcTemplate.update("""
                 INSERT IGNORE INTO user_profile (
@@ -61,7 +68,9 @@ public class ConsumerAccountRepository {
     }
 
     @Transactional
+    @Override
     public void recordVerifiedPhone(UUID userId, String mobile, String maskedPhone) {
+        // 登录用例已完成短信校验后才调用这里。手机号不会直接以普通明文写入：保存展示用脱敏值和加密后的值。
         PhoneDisclosureCipher.EncryptedPhone encrypted = phoneCipher.encrypt(userId, mobile);
         int updated = jdbcTemplate.update("""
                 UPDATE user_profile
@@ -70,6 +79,7 @@ public class ConsumerAccountRepository {
                 WHERE user_id = ? AND status = 'ACTIVE'
                 """, maskedPhone, encrypted.ciphertext(), encrypted.nonce(), encrypted.keyId(),
                 AdminAccountRepository.uuidToBytes(userId));
+        // 用户在此时已禁用或不存在时，不继续把它当成成功登录；上层 Application Service 会审计并转换为登录失败。
         if (updated != 1) throw new ConsumerAccountDisabledException();
     }
 
@@ -181,6 +191,4 @@ public class ConsumerAccountRepository {
         }
     }
 
-    public static final class ConsumerAccountDisabledException extends RuntimeException {
-    }
 }

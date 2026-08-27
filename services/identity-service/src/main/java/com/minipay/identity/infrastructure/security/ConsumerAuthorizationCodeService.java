@@ -1,6 +1,8 @@
 package com.minipay.identity.infrastructure.security;
 
 import com.minipay.identity.application.service.LoginRejectedException;
+import com.minipay.identity.application.port.ConsumerAuthorizationCodePort;
+import com.minipay.identity.application.port.ConsumerAuthorizationCodePort.IssuedAuthorizationCode;
 import com.minipay.identity.application.service.UuidV7;
 import com.minipay.identity.domain.model.ConsumerPrincipal;
 import java.security.Principal;
@@ -26,8 +28,10 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Service;
 
+// 这是 ConsumerAuthorizationCodePort 的安全基础设施实现：Application Service 交给它签发授权码，
+// 它不决定短信验证码是否正确，也不直接处理 HTTP 请求。
 @Service
-public class ConsumerAuthorizationCodeService {
+public class ConsumerAuthorizationCodeService implements ConsumerAuthorizationCodePort {
     public static final String DEVICE_ID_ATTRIBUTE = "minipay.device_id";
     public static final String SESSION_ID_ATTRIBUTE = "minipay.session_id";
     private static final Set<String> CONSUMER_SCOPES = Set.of(
@@ -99,6 +103,7 @@ public class ConsumerAuthorizationCodeService {
         this.codeTtl = codeTtl;
     }
 
+    @Override
     public IssuedAuthorizationCode issue(
             ConsumerPrincipal consumer,
             String clientId,
@@ -106,7 +111,9 @@ public class ConsumerAuthorizationCodeService {
             String codeChallenge,
             String codeChallengeMethod,
             String deviceId) {
+        // 授权码只会签发给已登记且回调地址匹配的客户端，防止任意调用方拿到消费者登录后的授权结果。
         RegisteredClient client = validateClient(clientId, redirectUri);
+        // PKCE 是客户端后续兑换授权码时的额外校验；当前阶段只记住“参数必须符合规则”。
         if (!"S256".equals(codeChallengeMethod)
                 || codeChallenge == null
                 || !codeChallenge.matches("^[A-Za-z0-9_-]{43,128}$")) {
@@ -132,6 +139,7 @@ public class ConsumerAuthorizationCodeService {
         Authentication principal = UsernamePasswordAuthenticationToken.authenticated(
                 user, null, user.getAuthorities());
 
+        // 生成短期、随机的授权码。它不同于短信 code：短信 code 用于验证手机号；授权码用于后续 OAuth 授权流程。
         Instant issuedAt = Instant.now();
         Instant expiresAt = issuedAt.plus(codeTtl);
         String rawCode = randomToken();
@@ -147,6 +155,7 @@ public class ConsumerAuthorizationCodeService {
                 .attribute(SESSION_ID_ATTRIBUTE, UuidV7.generate().toString())
                 .token(code)
                 .build();
+        // 保存授权记录后返回原始授权码与过期时间给 Application Service；Controller 再将它组织为对外响应。
         authorizations.save(authorization);
         return new IssuedAuthorizationCode(rawCode, expiresAt);
     }
@@ -173,6 +182,4 @@ public class ConsumerAuthorizationCodeService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
-    public record IssuedAuthorizationCode(String authorizationCode, Instant expiresAt) {
-    }
 }

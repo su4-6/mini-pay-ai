@@ -30,17 +30,22 @@ public class ConsumerSmsChallengeService {
     // lock:<phoneHash>：某手机号是否因输错过多而被锁定。
     private static final String LOCK_PREFIX = "minipay:auth:consumer:lock:";
     private static final DefaultRedisScript<String> VERIFY_SCRIPT = new DefaultRedisScript<>("""
+            -- KEYS[1] 是 challenge:<challengeId> 的完整验证码档案。
+            -- 整段脚本在 Redis 内一次执行：读取、比较、次数加一、锁定或删除不会被并发请求插队。
             if redis.call('EXISTS', KEYS[1]) == 0 then
+              -- 档案可能自然过期、已被成功消费，或新验证码发送时已删除旧档案。
               return 'EXPIRED'
             end
             local phoneHash = redis.call('HGET', KEYS[1], 'phoneHash')
             local lockKey = ARGV[4] .. phoneHash
             if redis.call('EXISTS', lockKey) == 1 then
+              -- 锁按手机号而非 challengeId 建立：换一个旧编号也不能绕过输错次数限制。
               return 'LOCKED'
             end
             if redis.call('HGET', KEYS[1], 'codeDigest') ~= ARGV[1] then
               local attempts = redis.call('HINCRBY', KEYS[1], 'attempts', 1)
               if attempts >= tonumber(ARGV[2]) then
+                -- 达到最大错误次数：写手机号锁、删除本次档案和“最新编号”指针。
                 redis.call('SET', lockKey, '1', 'EX', tonumber(ARGV[3]))
                 redis.call('DEL', KEYS[1])
                 redis.call('DEL', ARGV[5] .. phoneHash)
@@ -49,6 +54,7 @@ public class ConsumerSmsChallengeService {
               return 'INVALID'
             end
             local mobile = redis.call('HGET', KEYS[1], 'mobile')
+            -- 正确验证码只能成功一次：立即删除档案和 latest 指针，避免重复提交两次都成功。
             redis.call('DEL', KEYS[1])
             redis.call('DEL', ARGV[5] .. phoneHash)
             return 'OK:' .. mobile
@@ -168,6 +174,8 @@ public class ConsumerSmsChallengeService {
         } catch (RuntimeException exception) {
             // 中途失败时清理当前请求留下的三类临时状态：详细档案、最新编号指针、重发等待标记。
             // delete 不存在的键也安全；清理后继续抛出原异常，不能把失败伪装成发送成功。
+            // create 涉及外部短信渠道和多个 Redis 写入，无法作为一个 Redis 脚本或一个数据库事务整体回滚。
+            // 因此失败后用 delete 做补偿清理；它不能撤回已经发到手机上的短信，只清理服务端临时状态。
             redis.delete(CHALLENGE_PREFIX + challengeId);
             redis.delete(LATEST_PREFIX + phoneHash);
             redis.delete(RESEND_PREFIX + phoneHash);
@@ -176,6 +184,8 @@ public class ConsumerSmsChallengeService {
     }
 
     public VerifiedMobile consume(String challengeId, String code) {
+        // Java 不在这里手工拆开“查询 -> 比较 -> 计数 -> 删除”四步；统一交给上面的 Redis 脚本原子完成。
+        // challengeId 用于拼出验证码档案键；code 会先去空格、再取摘要，绝不把明文验证码保存或比较到日志中。
         String result = redis.execute(
                 VERIFY_SCRIPT,
                 java.util.List.of(CHALLENGE_PREFIX + challengeId),
@@ -184,10 +194,13 @@ public class ConsumerSmsChallengeService {
                 Long.toString(lockDuration.toSeconds()),
                 LOCK_PREFIX,
                 LATEST_PREFIX);
+        // Redis 脚本只返回简短状态；Java 负责把状态转换成上层能使用的结果对象或业务异常。
         if (result != null && result.startsWith("OK:")) {
+            // 返回的是已通过验证码校验的手机号，供登录用例继续查找/创建账户；不是直接返回给前端。
             return new VerifiedMobile(result.substring(3));
         }
         if ("LOCKED".equals(result)) {
+            // 统一用 LoginRejectedException 往上交；Controller/全局异常处理随后会变成 HTTP 失败响应。
             throw new LoginRejectedException("SMS_LOCKED", lockDuration.toSeconds());
         }
         if ("INVALID".equals(result)) {

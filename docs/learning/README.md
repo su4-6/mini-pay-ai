@@ -24,7 +24,7 @@
 |---|---|---|---|
 | 1 | 集合与项目地图 | 已完成 | [Day 1 复习与讲义](day-01-project-map-and-collections.md)、[系统地图](system-map.md)、[4 个可运行练习](../../learning-labs/day01-java-basics/) |
 | 2 | Java 语言基础与 Spring Bean | 基础部分已完成，剩余内容转入明日补齐 | [Day 2 记录](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
-| 3 | IOC、AOP、Bean 生命周期、Spring MVC | 已创建，待学习 | [Day 3 计划](day-03-spring-ioc-aop-mvc.md)、[Day 3 练习区](../../learning-labs/day03-spring-ioc-aop-mvc/) |
+| 3 | IOC、AOP、Bean 生命周期、Spring MVC | 核心内容已完成；最小 MVC 小练习转入 Day 4 开场复习 | [Day 3 记录](day-03-spring-ioc-aop-mvc.md)、[Day 3 练习区](../../learning-labs/day03-spring-ioc-aop-mvc/) |
 | 4 | Java 并发与 Agent Run | 未开始 | — |
 | 5 | JVM、GC 与排障 | 未开始 | — |
 | 6 | MySQL 与资金数据 ownership | 未开始 | — |

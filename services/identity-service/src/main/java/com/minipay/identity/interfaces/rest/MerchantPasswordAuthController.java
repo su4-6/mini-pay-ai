@@ -1,6 +1,8 @@
 package com.minipay.identity.interfaces.rest;
 
 import com.minipay.identity.application.service.LoginRejectedException;
+import com.minipay.identity.application.service.ConsumerAccountDisabledException;
+import com.minipay.identity.application.port.ConsumerAuthorizationCodePort.IssuedAuthorizationCode;
 import com.minipay.identity.application.service.PhoneNumberService;
 import com.minipay.identity.application.service.CaptchaService;
 import com.minipay.identity.application.service.ConsumerSmsChallengeService;
@@ -8,7 +10,6 @@ import com.minipay.identity.application.service.MerchantLoginPasswordService;
 import com.minipay.identity.domain.model.ConsumerPrincipal;
 import com.minipay.identity.infrastructure.persistence.ConsumerAccountRepository;
 import com.minipay.identity.infrastructure.security.ConsumerAuthorizationCodeService;
-import com.minipay.identity.infrastructure.security.ConsumerAuthorizationCodeService.IssuedAuthorizationCode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -63,7 +64,7 @@ public class MerchantPasswordAuthController {
             user = accounts.findByPhoneHash(phones.hash(phones.normalize(request.mobile())))
                     .orElseThrow(() -> new LoginRejectedException("MERCHANT_LOGIN_REJECTED"));
             credentials.verify(user.userId(), request.password());
-        } catch (ConsumerAccountRepository.ConsumerAccountDisabledException exception) {
+        } catch (ConsumerAccountDisabledException exception) {
             throw new LoginRejectedException("ACCOUNT_DISABLED");
         } catch (IllegalArgumentException exception) {
             throw new LoginRejectedException("MERCHANT_LOGIN_REJECTED");

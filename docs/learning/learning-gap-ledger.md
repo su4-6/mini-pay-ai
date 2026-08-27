@@ -23,6 +23,15 @@
 | Day 2 | 类加载、字节码、反射性能、动态代理细节 | Day 5 JVM 课 | 完成“类加载 → Bean 可用”的简化口述 |
 | Day 2 | Spring 自动配置源码、事务传播细节、循环依赖/三级缓存 | Day 30 红黄绿知识审计 | 标为黄/红并形成后续学习清单，不假装已掌握 |
 
+## Day 3 收尾审计（2026-08-27 / `8.26`）
+
+| 来源 | 项目 | 分类 | 去处与证据 |
+|---|---|---|---|
+| Day 1 补课 | `LinkedList`、`HashSet` 及其与 `ArrayList`/`HashMap` 的选择 | completed | 已运行 `learning-labs/day03-spring-ioc-aop-mvc/CollectionReviewPractice.java`，输出“支付”“2”。 |
+| Day 2 补课 | `/code/verify`、`consume(...)`、请求绑定和异常/响应链 | completed | 已沿 `ConsumerAuthController` → `ConsumerSmsLoginApplicationService` → `ConsumerSmsChallengeService.consume(...)` 口述并完成问答。 |
+| Day 3 原计划 | Filter/Controller 请求链、IoC/构造器注入、Bean 生命周期、AOP/事务、Controller 边界 | completed | 已完成 10 道口述题、2 道场景题，并有身份服务编译/定向测试证据。 |
+| Day 3 原计划 | `MvcServiceFlowPractice.java`：输入对象 → Service → 返回对象最小练习 | scheduled carryover | Day 4 开场复习先完成并记录运行输出；Day 4 的并发新内容不减少。 |
+
 ## 使用规则
 
 1. 每天开始前先查看本台账中安排到当天的项目。
