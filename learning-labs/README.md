@@ -1,5 +1,7 @@
 # MiniPay 学习实验区
 
+> 每个实验日还会在项目主线后追加 40 分钟 PPT 八股收尾；题目状态、复习日和项目结合关系统一维护在 [PPT 覆盖地图](../docs/learning/java-interview-ppt-map.md)。
+
 ## 当前进度
 
 - Day 1「集合与项目地图」已完成：[day01-java-basics](day01-java-basics/)。

@@ -95,3 +95,26 @@
 2. 将 HashMap 深入、并发工具、Agent 准入分别标记为 completed、scheduled carryover 或 intentional later-depth。
 3. 记录误区：局部变量隔离不等于所有并发安全；单 JVM 工具不等于分布式一致性。
 4. 更新总进度、练习索引、补课台账和项目改进台账；通过测试后才提交。
+
+## 8. Java 面试 PPT 融合（不替换 Day 4 主线）
+
+对应总表：[Java 面试 PPT 覆盖地图](java-interview-ppt-map.md)。本日只处理并发篇与集合篇的关联内容；JVM、MySQL、Redis 等留在原定日期。
+
+### 八股融合
+
+1. JMM 三特性：原子性、可见性、有序性；用 `CounterRacePractice` 和 `AtomicCounterPractice` 对照说明。
+2. `synchronized`、`volatile`、CAS、`AtomicInteger`：每个工具解决什么、不解决什么。
+3. AQS、`ReentrantLock`、`Semaphore`：先建立用途直觉，再回到 Agent Run 的 JVM 内信号量。
+4. `ConcurrentHashMap`：JDK 8+ 的桶级同步/CAS 思路，以及“单个 Map 操作安全不等于业务流程原子”。
+5. 线程池：核心参数、阻塞队列、拒绝策略、超时；后续再结合下游并行调用。
+
+### 八股收尾（40 分钟）
+
+- 进程与线程、并发与并行。
+- `start()` 与 `run()`、线程状态、`wait()` 与 `sleep()`。
+- JDK 7 `ConcurrentHashMap` Segment 与 JDK 8+ 实现的区别；MiniPay 使用 Java 21，不把旧实现当作当前源码结论。
+
+### 本日额外验收
+
+- 对上述每个 P0 题用自己的话回答 2 分钟；答错项写入 `learning-gap-ledger.md`，并标记到 Day7/Day14 复习。
+- 完成 `ConcurrentHashMapPractice2.java` 后，记录两线程均调用 `computeIfAbsent`、但只有一个线程真正创建会话的输出证据。
