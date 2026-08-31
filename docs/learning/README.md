@@ -1,5 +1,11 @@
 # MiniPay 30 天项目驱动学习记录
 
+> 原日程的冻结基线见 [第一代 30 天主计划](original-30-day-baseline.md)。后续 PPT、补课和 Spring AI 都只能追加，不能替代该基线中的任一主题或验收。
+
+## 重点资料库
+
+- [并发、框架与项目理解重点资料库](key-concepts.md)：收录已学但容易混淆的结论；当前已整理 Day 4 的线程池、`ConcurrentHashMap`、锁和 `Semaphore` 边界。
+
 本目录是 `codex/minipay-30day-learning` 分支的学习与改造证据。每天按“理论 → 源码 → 实操 → 口述 → 验收”推进；当天验收完成后才进入下一天。
 
 ## Java 面试 PPT 融合规则（2026-08-29 起）
@@ -35,7 +41,7 @@
 | 1 | 集合与项目地图 | 已完成 | [Day 1 复习与讲义](day-01-project-map-and-collections.md)、[系统地图](system-map.md)、[4 个可运行练习](../../learning-labs/day01-java-basics/) |
 | 2 | Java 语言基础与 Spring Bean | 基础部分已完成，剩余内容转入明日补齐 | [Day 2 记录](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
 | 3 | IOC、AOP、Bean 生命周期、Spring MVC | 核心内容已完成；最小 MVC 小练习转入 Day 4 开场复习 | [Day 3 记录](day-03-spring-ioc-aop-mvc.md)、[Day 3 练习区](../../learning-labs/day03-spring-ioc-aop-mvc/) |
-| 4 | Java 并发与 Agent Run | 计划已创建，待学习 | [Day 4 计划](day-04-java-concurrency-and-agent-run.md)、[Day 4 练习区](../../learning-labs/day04-java-concurrency/) |
+| 4 | Java 并发与 Agent Run | 进行中，未完成项留在当前 `8.28` 分支继续 | [Day 4 计划](day-04-java-concurrency-and-agent-run.md)、[Day 4 练习区](../../learning-labs/day04-java-concurrency/) |
 | 5 | JVM、GC 与排障 | 未开始 | — |
 | 6 | MySQL 与资金数据 ownership | 未开始 | — |
 | 7 | Redis、Session 与 JWT | 未开始 | — |
@@ -144,3 +150,19 @@
 
 - 先补齐 `consume(challengeId, code)`：验证码提交后的过期、错误次数、锁定与成功处理；以及 Spring MVC 请求进入、参数绑定和响应转换。
 - 随后完整执行原计划 Day 3：IOC、AOP、Bean 生命周期与 Spring MVC；不因补课而删减 Day 3 内容。
+
+## Spring AI 增量路线（不替代原计划）
+
+完整安排见 [spring-ai-learning-map.md](spring-ai-learning-map.md)。原 Day1–30 的 Java、消息队列、Docker、Kubernetes、可观测性和 CI 内容完全保留；只在对应日追加 Spring AI 源码阅读、小验证或安全设计。
+
+- Day31–37：继续作为原定的 PPT P0/P1 补漏、错题复习、模拟面试与项目表达缓冲期。
+- Day38–44：新增 Spring AI 专项改造期，依次完成统一模型调用边界、结构化输出与提示词安全、工具确认、记忆/RAG 边界、观测、CI 和面试表达。
+- 当前显式记忆不称为 RAG；没有源码、测试和测量证据的能力只能标为“待实施/设计”。
+
+## 44 天总排期确认
+
+| 阶段 | 天数 | 作用 | 是否替代原主线 |
+|---|---:|---|---|
+| 原项目主线 | Day1–30 | Java、微服务、MQ、Docker、Kubernetes、可观测性、CI、故障与面试 | 否，完全保留 |
+| 原缓冲期 | Day31–37 | PPT P0/P1 补漏、错题复习、模拟面试、项目表达 | 否，不用于替代主线 |
+| Spring AI 专项期 | Day38–44 | 安全改造、结构化输出、工具边界、RAG 设计、观测、CI、AI 面试表达 | 追加，不回写为既有能力 |

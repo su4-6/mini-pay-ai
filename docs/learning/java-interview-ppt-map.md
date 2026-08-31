@@ -213,3 +213,9 @@
 | 13–15 | 对称/非对称加密、后台服务安全 | P1 | Day29 收尾 |
 | 16–25 | 日志采集、ELK、日志命令、线上 Bug 排查、远程调试 | P0 | Day26、28；ELK 部署为后续深度 |
 | 26–27 | 压测、性能指标 | P1 | Day28–29：只基于真实测量 |
+
+## Spring AI 补充轨道（不替代 11 份 Java PPT）
+
+Spring AI 不属于第 12 份 Java PPT，也不计入 118 条 PPT 目录完成数。它作为 MiniPay 项目工程补充：Day4/8–9/15–18/20–21/25–30 追加源码证据，Day38–44 完成专项安全改造、测试、观测和表达。详见 [spring-ai-learning-map.md](spring-ai-learning-map.md)。
+
+所有 Spring AI 结论以 Java 21、Spring Boot 3.5 与本仓库源码/测试为准；显式记忆不等于 RAG，未实施的指标、向量库或改造不得写进简历。

@@ -1,5 +1,7 @@
 # Day 4：HashMap 深入、Java 并发与 Agent Run
 
+> 复习重点已同步至 [重点资料库](key-concepts.md#day-4并发工具先按保护目标区分)：不要把本日独立练习误认为同一条登录流程；尤其要区分线程池、`ConcurrentHashMap`、锁与 `Semaphore` 各自限制的对象。
+
 > 分支：`8.28`。实际学习日期与分支日期分开记录：2026-08-27 用于收尾 Day 3，本分支才开始 Day 4。
 
 ## 0. 开场复习与补课（不减少 Day 4）
@@ -118,3 +120,13 @@
 
 - 对上述每个 P0 题用自己的话回答 2 分钟；答错项写入 `learning-gap-ledger.md`，并标记到 Day7/Day14 复习。
 - 完成 `ConcurrentHashMapPractice2.java` 后，记录两线程均调用 `computeIfAbsent`、但只有一个线程真正创建会话的输出证据。
+
+## Spring AI 并发增量（追加，不替代 Day4）
+
+今天的 `Semaphore` 也对应 Agent Service 的三层并发边界：
+
+1. `SpringAiModelGateway` 的 `Semaphore`：限制单个实例向模型发出的调用数。
+2. `AgentRunApplicationService` 的数据库 Gate：避免多个实例为同用户/同会话创建冲突 Run。
+3. `AgentRuntimeConfiguration` 的虚拟线程执行器：负责异步运行任务，不是并发上限本身。
+
+Day4 只建立三层边界认识，不提前改业务代码。Day38 将在测试保护下处理 `classifyPendingTransferTurn` 未统一申请模型许可的改进项（AI-001）。完整台账见 [spring-ai-learning-map.md](spring-ai-learning-map.md)。
