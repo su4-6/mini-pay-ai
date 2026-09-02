@@ -130,3 +130,17 @@
 3. `AgentRuntimeConfiguration` 的虚拟线程执行器：负责异步运行任务，不是并发上限本身。
 
 Day4 只建立三层边界认识，不提前改业务代码。Day38 将在测试保护下处理 `classifyPendingTransferTurn` 未统一申请模型许可的改进项（AI-001）。完整台账见 [spring-ai-learning-map.md](spring-ai-learning-map.md)。
+
+## 当前重点锚点与继续位置（Day4 未完成）
+
+已完成并列为重点复习：`CountDownLatchFuturePractice.java` 的并行支付页查询实验。
+
+- 已验证：`CountDownLatch` 只等待所有任务结束；`countDown()` 放在 `finally` 中，所以失败任务也会让计数归零。
+- 已验证：超时返回 `false` 不会自动取消后台任务；之后它们仍可能继续输出“查询完成”。
+- 已验证：`Future.get()` 才能得到每一项的返回值，或通过 `ExecutionException.getCause()` 看到具体失败原因。
+- 已纠正误区：不能凭“是否打印成功日志”判断任务成功；日志位置不是结果契约。
+- AQS 连接：`CountDownLatch` 使用 AQS 管理剩余计数和 `await()` 等待/唤醒；AQS 不判断业务成功失败。
+
+当前继续位置：在此重点锚点后继续 Day4 的 `CompletableFuture`、线程池超时/取消与项目中的并发边界复盘；这些都必须回扣“整体结束信号”和“逐项结果”的区别。
+
+详细复习材料见 [重点资料库](key-concepts.md#8-重点锚点并行查询countdownlatchfuture-与-aqs)。
