@@ -1,4 +1,4 @@
-# Day 1—2 补课台账
+# MiniPay 学习补课台账
 
 > 本台账不代表 Day 1 或 Day 2 做错了。它记录的是当日刻意不深挖、但 30 天内必须有明确去处的内容。旧分支保持冻结；补课只在后续分支进行。
 
@@ -34,7 +34,7 @@
 | Day 3 原计划 | Filter/Controller 请求链、IoC/构造器注入、Bean 生命周期、AOP/事务、Controller 边界 | completed | 已完成 10 道口述题、2 道场景题，并有身份服务编译/定向测试证据。 |
 | Day 3 原计划 | `MvcServiceFlowPractice.java`：输入对象 → Service → 返回对象最小练习 | scheduled carryover | Day 4 开场复习先完成并记录运行输出；Day 4 的并发新内容不减少。 |
 
-## Day 4 收尾审计（2026-09-05 / 当前 checkout `interview-sprint`）
+## Day 4 收尾审计（2026-09-05 / 收尾 checkout `interview-sprint`）
 
 | 来源 | 项目 | 分类 | 去处与复习证据 |
 |---|---|---|---|
@@ -45,7 +45,17 @@
 | Day 4 原计划 | Agent Run Gate、实例内 Semaphore、虚拟线程职责 | completed | 已跟读三处源码并通过 `AgentRunApplicationServiceTest`（6/0/0）。Day21 复习。 |
 | MQ 未来主线 | Inbox、`eventId` 持久化幂等的完整实现 | intentional later-depth | Day10--12 保留原计划；Day4 只建立“JVM 内 Map 不足以跨实例去重”的边界。 |
 
-## Day 4 初始化（`8.28`）
+## Day 5 初始化（2026-09-05 / `9.5`）
+
+| 来源 | 项目 | 当前分类 | Day5 安排与完成证据 |
+|---|---|---|---|
+| Day 2 转入 | 类加载过程、双亲委派，以及“类加载 → Spring Boot 启动 → Bean 可用”的简化链路 | scheduled carryover | 纳入 Day5 主线；完成类加载顺序练习和脱稿口述后才能转为 completed。 |
+| Day 4 转入 | 死锁条件与 `jcmd`/`jstack` 的安全观察 | scheduled carryover | Day5 只观察学习进程的线程状态和线程栈；完整故障演练保留 Day28。 |
+| Day 5 提升项 | JVM 参数、Heap Dump 分析和生产级调优 | intentional later-depth | Day5 只掌握安全的小堆实验和基础观察；Day28 再完成故障复盘，不接触生产进程。 |
+
+Day5 当前只是初始化，以上项目尚未验收；不得因文档和目录已经存在而标记为 completed。
+
+## Day 4 初始化存档（`8.28`）
 
 Day 4 开场必须先完成 `MvcServiceFlowPractice.java`，随后按原 Day 4 范围学习 HashMap 深入、Java 并发与 Agent Run；不得因为补做这一个小练习而删减并发内容。
 

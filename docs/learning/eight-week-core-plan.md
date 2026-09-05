@@ -6,7 +6,7 @@
 
 从 [学习首页](README.md) 进入本计划。本文只回答“按什么节奏学、必会到哪”；主线主题和原始验收以 [第一代 30 天主计划](original-30-day-baseline.md) 为准；当前学习内容以对应的 `day-*.md` 讲义为准；未完成项写入 [补课台账](learning-gap-ledger.md)；当天面试题和复习日期以 [Java 面试 PPT 覆盖地图](java-interview-ppt-map.md) 为准。
 
-Day 4 已完成讲义验收和台账分类。当前继续点是 Day 5：JVM、GC、类加载与 OOM；Day 5 的讲义和练习目录在 `9.5` 分支初始化。
+Day 4 已完成讲义验收和台账分类。当前继续点是 [Day 5：JVM、GC、类加载与 OOM](day-05-jvm-gc-classloading-oom.md)；讲义和练习入口已在 `9.5` 初始化，但尚未开始教学或验收。
 
 ## 计划外问题的处理
 
@@ -16,8 +16,8 @@ PPT、口述题、八股收尾、复习节奏和当前 Day 的既有验收均属
 
 - 目标：以每周 12--16 小时完成 Day 4--30 的后端校招核心主线，形成可验证的源码、实验和口述证据。
 - 目标岗位：Java 后端校招；Kubernetes 和 CI/CD 学到可交付、可排障、可解释边界的程度，不按平台运维岗位深挖。
-- 当前起点：Day 4 已于 2026-09-05 完成；下一单元是 Day 5 的 JVM、GC、类加载与 OOM。
-- K8s 预习：`deploy/k8s-learning/` 是预习材料，不构成 Day 22 的完成证据；正式 Day 22 前须确认其分支归属和运行记录。
+- 当前起点：Day 4 已于 2026-09-05 完成；Day 5 计划已初始化，下一步先做 15 分钟 Day 4 闭卷复习。
+- K8s 预习：[归档材料](../../deploy/k8s-learning/README.md)已转交 clean 副本继续，不构成 Day 22 的完成证据；Day22--24 仍须独立完成正式验收。
 - 保持架构约束：Kubernetes 只承载无状态业务服务；MySQL、Redis、RocketMQ、Seata 继续由 Compose 承载。不引入 Nacos、Gateway，不跨服务读写数据。
 
 ## 每个学习单元的完成门槛

@@ -135,7 +135,7 @@ Day4 只建立三层边界认识，不提前改业务代码。Day38 将在测试
 
 ## Day4 收尾记录（2026-09-05）
 
-当前 checkout：`interview-sprint`。Day4 的历史分支标签仍按计划记录为 `8.28`；本次只完成 Day4 收尾，不初始化 Day5。
+Day4 收尾 checkout：`interview-sprint`。Day4 的历史分支标签仍按计划记录为 `8.28`；该次提交只关闭 Day4，随后才从已推送状态创建 `9.5`。
 
 ### 今日学习清单
 
@@ -172,7 +172,7 @@ Day4 只建立三层边界认识，不提前改业务代码。Day38 将在测试
 
 Day4 的 10 道口述题和 2 道场景题已完成；薄弱点转为 Day7、Day14、Day21 复习。`wait()` 与虚拟线程等待的比较是计划外问题，已记录在 `optional-extension-backlog.md`，不阻塞 Day4。
 
-Day4 已关闭。Day5 尚未创建计划、目录或分支；下次开始前先做 Day4 闭卷回忆，再按原计划进入 Day5 JVM。
+Day4 已关闭。[Day5 计划](day-05-jvm-gc-classloading-oom.md)与练习目录现已在 `9.5` 初始化；下一步先做 Day4 闭卷回忆，再进入 Day5 JVM 新课。
 
 ## 完成前的重点锚点与继续位置（存档）
 
