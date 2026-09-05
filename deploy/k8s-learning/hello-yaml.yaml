@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-yaml-config
+data:
+  # 通过 env 引用时，这是 Pod 启动时读取的快照；修改 ConfigMap 不会改写已有进程环境。
+  App_GREETING: "Hello from updated ConfigMap"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hello-yaml-secret
+type: Opaque
+stringData:
+  # 仅供本地学习，非真实凭据；正式环境必须由独立 Secret 注入。
+  DEMO_API_KEY: "demo-only-not-a-real-secret"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-yaml
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-yaml
+  template:
+    metadata:
+      labels:
+        app: hello-yaml
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          env:
+            - name: App_GREETING
+              valueFrom:
+                configMapKeyRef:
+                  name: hello-yaml-config
+                  key: App_GREETING
+            - name: DEMO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: DEMO_API_KEY
+                  name: hello-yaml-secret
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          ports:
+            - containerPort: 80
+          # readiness 决定 Pod 是否接收流量；liveness 决定失败后是否重启容器。
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-yaml-service
+spec:
+  selector:
+    app: hello-yaml
+  ports:
+    - port: 80
+      targetPort: 80
+  type: ClusterIP
