@@ -14,14 +14,17 @@ public class CountDownLatchPractice {
 //        System.out.println("主线程：三个查询都完成，开始组装支付页");
 //        pool.shutdown();
 
-        //超时等待
-        boolean allFinished=latch.await(2, TimeUnit.SECONDS);
-        if (!allFinished){
-            System.out.println("主线程：查询超时，不能组装完整支付页");
+        // 无论正常完成、超时还是主线程被中断，都要关闭线程池，不能只在某一个分支释放资源。
+        try {
+            boolean allFinished=latch.await(2, TimeUnit.SECONDS);
+            if (!allFinished){
+                System.out.println("主线程：查询超时，不能组装完整支付页");
+                return;
+            }
+            System.out.println("主线程：三个查询都完成，开始组装支付页");
+        } finally {
             pool.shutdown();
-            return;
         }
-        System.out.println("主线程：三个查询都完成，开始组装支付页");
     }
     private static  void query(String taskName,CountDownLatch latch){
         try {

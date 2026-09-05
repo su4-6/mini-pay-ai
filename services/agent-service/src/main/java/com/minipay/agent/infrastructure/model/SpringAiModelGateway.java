@@ -25,6 +25,9 @@ public final class SpringAiModelGateway implements ModelGateway {
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
     private final Duration requestTimeout;
+    // Infrastructure outbound adapter: accepts model requests and returns candidates or streamed text deltas.
+    // 许可只限制当前 JVM 的上游模型调用；tryAcquire 失败表示本实例繁忙，finally 保证已取得的许可被归还。
+    // 它保护模型连接资源，但不能替代负责跨实例 Run 准入的数据库 Gate。
     private final Semaphore modelPermits;
     private final OpenAiChatOptions modelOptions;
 

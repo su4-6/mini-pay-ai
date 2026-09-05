@@ -1,5 +1,3 @@
-import jdk.swing.interop.SwingInterOpUtils;
-
 public class SynchronizedCounterPractice {
     private static  int count=0;
     private static final int TIMES=100_000;

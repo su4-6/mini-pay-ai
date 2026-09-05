@@ -14,11 +14,11 @@
 | 来源 | 题目 | 级别 | 已有证据 | 状态 | 下次复习 |
 |---|---|---:|---|---|---|
 | 07 集合篇 | ArrayList、LinkedList、HashSet 的选择 | P1 | Day1/Day3 独立练习 | 已学待复习 | Day7 |
-| 07 集合篇 | HashMap `put`、冲突、扩容、树化、2 的幂 | P0 | `HashMapCollisionPractice.java` | 需加深 | Day4 收尾 |
-| 07 集合篇 | ConcurrentHashMap 与 HashMap 的边界 | P0 | Day1 + Day4 `ConcurrentHashMapPractice2.java` | 需加深 | Day4 收尾 |
+| 07 集合篇 | HashMap `put`、冲突、扩容、树化、2 的幂 | P0 | `HashMapCollisionPractice.java` + Day4 口述验收 | 已学待复习 | Day14 |
+| 07 集合篇 | ConcurrentHashMap 与 HashMap 的边界 | P0 | Day1 + Day4 `ConcurrentHashMapPractice2.java` | 已学待复习 | Day14 |
 | 04 框架篇 | IoC、构造器注入、Bean、AOP、事务 | P0 | Identity 登录/审计源码 | 已学待复习 | Day7 |
 | 04 框架篇 | MVC 请求链、Filter、Controller 边界 | P0 | `RequestIdFilter`、`ConsumerAuthController` | 已学待复习 | Day7 |
-| 08 并发篇 | 竞态、原子性、可见性、`volatile`、CAS、AtomicInteger | P0 | `CounterRacePractice.java`、`AtomicCounterPractice.java` | 需加深 | Day4 收尾 |
+| 08 并发篇 | 竞态、原子性、可见性、`volatile`、CAS、AtomicInteger | P0 | `CounterRacePractice.java`、`AtomicCounterPractice.java` | 已学待复习 | Day14 |
 
 ## 覆盖与排期
 
@@ -50,10 +50,10 @@
 | 07 集合：复杂度、数组/链表、ArrayList/LinkedList | P1 | 独立 Java 基本功 | Day4 收尾 | 已学待复习 | Day14 |
 | 07 集合：JDK7/8 HashMap 差异与并发风险 | P1 | 明确版本差异；MiniPay 使用 Java 21 | Day4 收尾 | 需加深 | Day21 |
 | 08 并发：进程/线程、并发/并行、状态、start/run、wait/sleep | P1 | 不强行映射业务；每日收尾 | Day8–9 收尾 | 未学 | Day21 |
-| 08 并发：synchronized、Monitor、JMM、volatile、CAS | P0 | Agent Run 和共享数据实验 | Day4 | 需加深 | Day14 |
-| 08 并发：AQS、ReentrantLock、Lock 对比、死锁诊断 | P0 | Semaphore 与 `jstack` 排障 | Day4–5 | 未学 | Day21 |
-| 08 并发：ConcurrentHashMap JDK8 模型 | P0 | `putIfAbsent` / `computeIfAbsent` 实验 | Day4 | 需加深 | Day14 |
-| 08 并发：线程池、队列、拒绝策略、核心线程数 | P0 | 下游并行/Agent 调用隔离 | Day4 | 未学 | Day21 |
+| 08 并发：synchronized、Monitor、JMM、volatile、CAS | P0 | Agent Run 和共享数据实验 | Day4 | 已学待复习 | Day14 |
+| 08 并发：AQS、ReentrantLock、Lock 对比、死锁诊断 | P0 | Semaphore 直觉、`shutdownNow()` 协作中断；死锁诊断仍在 Day5 | Day4–5 | 需加深 | Day21 |
+| 08 并发：ConcurrentHashMap JDK8 模型 | P0 | `putIfAbsent` / `computeIfAbsent` 实验 | Day4 | 已学待复习 | Day14 |
+| 08 并发：线程池、队列、拒绝策略、核心线程数 | P0 | 线程池、拒绝、取消、关闭练习 | Day4 | 已学待复习 | Day21 |
 | 09 JVM：运行时内存、堆/栈/方法区/直接内存 | P0 | Java 服务指标与 OOM 排查 | Day5 | 未学 | Day14 |
 | 09 JVM：类加载器、双亲委派、类加载过程 | P0 | Spring 启动与 Bean 前置知识 | Day5 | 未学 | Day21 |
 | 09 JVM：垃圾算法、分代、Minor/Mixed/Full GC、G1 | P0 | Actuator/GC 指标和故障演练 | Day5 | 未学 | Day21 |

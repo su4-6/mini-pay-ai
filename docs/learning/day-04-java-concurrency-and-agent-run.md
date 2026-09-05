@@ -4,6 +4,8 @@
 
 > 分支：`8.28`。实际学习日期与分支日期分开记录：2026-08-27 用于收尾 Day 3，本分支才开始 Day 4。
 
+> 本日是 [8 周核心执行计划](eight-week-core-plan.md) 第 1 周的当前学习单元；开始前先按 [学习首页](README.md) 的固定顺序阅读本讲义、[补课台账](learning-gap-ledger.md) 和 [Java 面试 PPT 覆盖地图](java-interview-ppt-map.md)。
+
 ## 0. 开场复习与补课（不减少 Day 4）
 
 ### 15 分钟闭卷回忆
@@ -131,7 +133,48 @@
 
 Day4 只建立三层边界认识，不提前改业务代码。Day38 将在测试保护下处理 `classifyPendingTransferTurn` 未统一申请模型许可的改进项（AI-001）。完整台账见 [spring-ai-learning-map.md](spring-ai-learning-map.md)。
 
-## 当前重点锚点与继续位置（Day4 未完成）
+## Day4 收尾记录（2026-09-05）
+
+当前 checkout：`interview-sprint`。Day4 的历史分支标签仍按计划记录为 `8.28`；本次只完成 Day4 收尾，不初始化 Day5。
+
+### 今日学习清单
+
+| 计划项 | 实际证据 | 分类 |
+|---|---|---|
+| Day3 转入的 MVC 小练习 | `MvcServiceFlowPractice.java` 输出“小明支付100元” | completed |
+| HashMap 与集合收尾 | 完成 `put`、哈希/桶、冲突、2 的幂、0.75、扩容和树化的口述检查 | completed |
+| 共享状态、JMM、CAS、原子类 | `AtomicCounterPractice.java` 输出期望次数 `20000`、实际次数 `20000` | completed |
+| ConcurrentHashMap 复合操作 | `ConcurrentHashMapPractice2.java` 显示只有一个线程真正创建会话，两个线程取得同一会话 | completed |
+| CompletableFuture 与结果边界 | 钱包失败会使支付页组装失败；推荐查询可经 `exceptionally` 降级；`get(timeout)` 不取消后台工作 | completed |
+| 线程池、拒绝、关闭和取消 | 已观察队列等待、CallerRuns、`shutdownNow()` 协作中断，以及只取消任务 3 的 `Future.cancel(false)` | completed |
+| Agent Run 并发边界 | 已跟读 Application Service、持久化 Gate、Model Gateway，并运行 Agent 定向测试 | completed |
+| MQ Inbox / eventId 的完整实现 | 仅完成“JVM 内 Map 不能替代跨实例持久化幂等”的边界判断；保留 Day10--12 原计划 | intentional later-depth |
+
+### 实际运行与测试证据
+
+- `CompletableFuturePractice.java`：钱包任务抛出异常后，最终输出“支付页组装失败…钱包服务暂时不可用”；钱包是必需输入，推荐降级不会掩盖钱包失败。
+- `ThreadPoolPractice.java`：两个任务开始后主线程 500ms 即执行 `shutdownNow()`；工作线程在 `sleep` 收到中断后恢复中断标记并返回，排队任务 3、4 没有开始。
+- `FutureCancelPractice.java`：输出“任务3取消结果：true”，任务 1、2、4 完成；取消句柄只影响任务 3。
+- `CustomThreadPoolPractice.java`：任务 7 被拒绝；CallerRuns 是提交任务的线程自己执行，不是悄悄丢掉资金相关动作。
+- `CountDownLatchPractice.java`：全量复跑发现正常完成分支遗漏线程池关闭；已改为 `finally` 统一 `shutdown()`，避免程序打印完成后仍不退出。
+- `mvn -f services/agent-service/pom.xml -Dtest=AgentRunApplicationServiceTest test`：6 tests、0 failures、0 errors，BUILD SUCCESS。
+
+### 纠正并保留的理解锚点
+
+- `CountDownLatch` 归零表示任务结束，不表示业务成功；逐项结果由 `Future.get()` 或异常决定。
+- `submit` 不会阻塞主线程；因此后面的 `shutdownNow()` 会立刻运行。中断只是请求，任务要在可中断点捕获后自行停止。
+- 线程池释放不能只写在超时或异常分支；正常、超时和中断路径都应收敛到统一清理逻辑。
+- JVM 内 `Semaphore` 限制当前实例的模型调用；数据库用户 Gate 才能让多个实例共同遵守同一用户的 Run 准入上限。虚拟线程负责调度，不是全局配额。
+- `ConcurrentHashMap` 的桶级并发控制是实现方式；业务“查再创建”仍需原子复合操作或数据库事务/约束。
+- Spring 单例 Service 可被多个请求线程同时调用；请求专属数据放参数或局部变量，不放可变成员字段。
+
+### 口述、场景与下一步
+
+Day4 的 10 道口述题和 2 道场景题已完成；薄弱点转为 Day7、Day14、Day21 复习。`wait()` 与虚拟线程等待的比较是计划外问题，已记录在 `optional-extension-backlog.md`，不阻塞 Day4。
+
+Day4 已关闭。Day5 尚未创建计划、目录或分支；下次开始前先做 Day4 闭卷回忆，再按原计划进入 Day5 JVM。
+
+## 完成前的重点锚点与继续位置（存档）
 
 已完成并列为重点复习：`CountDownLatchFuturePractice.java` 的并行支付页查询实验。
 
@@ -141,6 +184,6 @@ Day4 只建立三层边界认识，不提前改业务代码。Day38 将在测试
 - 已纠正误区：不能凭“是否打印成功日志”判断任务成功；日志位置不是结果契约。
 - AQS 连接：`CountDownLatch` 使用 AQS 管理剩余计数和 `await()` 等待/唤醒；AQS 不判断业务成功失败。
 
-当前继续位置：在此重点锚点后继续 Day4 的 `CompletableFuture`、线程池超时/取消与项目中的并发边界复盘；这些都必须回扣“整体结束信号”和“逐项结果”的区别。
+完成状态：此处原定的 `CompletableFuture`、线程池超时/取消和项目并发边界复盘均已完成；本段仅保留为学习过程存档，不再作为继续位置。
 
 详细复习材料见 [重点资料库](key-concepts.md#8-重点锚点并行查询countdownlatchfuture-与-aqs)。

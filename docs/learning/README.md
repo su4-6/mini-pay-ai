@@ -8,6 +8,26 @@
 
 本目录是 `codex/minipay-30day-learning` 分支的学习与改造证据。每天按“理论 → 源码 → 实操 → 口述 → 验收”推进；当天验收完成后才进入下一天。
 
+## 当前执行节奏（8 周核心主线）
+
+- [8 周核心执行计划](eight-week-core-plan.md) 是冻结 Day1--30 主计划的执行节奏：`Day` 按学习单元推进，不要求在自然日内完成。
+- 每个单元必须具有真实源码链、最小实验/测试或运行证据、当天口述题和一条项目边界记录；未通过则留在当前单元，不以提前学习后续主题替代。
+- Day4 已于 2026-09-05 收尾完成：`CompletableFuture`、线程池超时/取消和 Agent Run 三层并发边界均有练习或测试证据。`deploy/k8s-learning/` 仅为预习，不计入 Day22 完成。
+- 每周投入 12--16 小时；每周末增加一次闭卷复盘。Day31--37 仅用于 P0/P1 补漏、错题和模拟面试，Day38--44 仅在核心主线验收后进入 Spring AI 专项。
+
+## 学习文档导航（从这里开始）
+
+| 文档 | 唯一职责 | 何时读取 |
+|---|---|---|
+| [第一代 30 天主计划](original-30-day-baseline.md) | 冻结“学什么”和每个 Day 的原始验收；不得删减或替换 | 修改计划、判断是否偏离主线前 |
+| [8 周核心执行计划](eight-week-core-plan.md) | 定义“按什么节奏学、必会到哪、提升到哪” | 每周开始、安排当前学习单元前 |
+| 当前 `day-*.md` 讲义 | 定义当前单元的源码入口、练习、口述题和继续位置 | 每次学习开始 |
+| [补课台账](learning-gap-ledger.md) | 记录未完成项、明确后续落点和完成证据 | 每次学习开始和结束 |
+| [可选拓展清单](optional-extension-backlog.md) | 记录用户主动问到的计划外知识，不阻塞主线 | 提问发生时记录；主线完成后选择性复习 |
+| [Java 面试 PPT 覆盖地图](java-interview-ppt-map.md) | 管理 P0/P1 题、证据和复习日期 | 主线结束后的 30--40 分钟收尾 |
+
+执行顺序固定为：**本 README → 8 周执行计划 → 当前 Day 讲义 → 补课台账 → PPT 覆盖地图**。可选拓展清单只在计划外问题发生时写入，不加入该顺序。发生冲突时，以冻结主计划的主题和架构/资金安全边界为准；执行节奏可以延长，但不能压缩或替换原主线。
+
 ## Java 面试 PPT 融合规则（2026-08-29 起）
 
 - 使用 [Java 面试 PPT 覆盖地图](java-interview-ppt-map.md) 管理 `F:\BaiduNetdiskDownload\5.2023版Java面试教程` 的 11 份 PPT；MP4 不作为学习任务。
@@ -41,7 +61,7 @@
 | 1 | 集合与项目地图 | 已完成 | [Day 1 复习与讲义](day-01-project-map-and-collections.md)、[系统地图](system-map.md)、[4 个可运行练习](../../learning-labs/day01-java-basics/) |
 | 2 | Java 语言基础与 Spring Bean | 基础部分已完成，剩余内容转入明日补齐 | [Day 2 记录](day-02-java-language-and-spring-bean.md)、[Day 2 练习区](../../learning-labs/day02-java-spring-basics/) |
 | 3 | IOC、AOP、Bean 生命周期、Spring MVC | 核心内容已完成；最小 MVC 小练习转入 Day 4 开场复习 | [Day 3 记录](day-03-spring-ioc-aop-mvc.md)、[Day 3 练习区](../../learning-labs/day03-spring-ioc-aop-mvc/) |
-| 4 | Java 并发与 Agent Run | 进行中，未完成项留在当前 `8.28` 分支继续 | [Day 4 计划](day-04-java-concurrency-and-agent-run.md)、[Day 4 练习区](../../learning-labs/day04-java-concurrency/) |
+| 4 | Java 并发与 Agent Run | 已完成（2026-09-05 收尾于当前 `interview-sprint` checkout）；Day5 尚未初始化 | [Day 4 计划](day-04-java-concurrency-and-agent-run.md)、[Day 4 练习区](../../learning-labs/day04-java-concurrency/) |
 | 5 | JVM、GC 与排障 | 未开始 | — |
 | 6 | MySQL 与资金数据 ownership | 未开始 | — |
 | 7 | Redis、Session 与 JWT | 未开始 | — |

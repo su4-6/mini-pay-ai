@@ -2,6 +2,8 @@
 
 > 本台账不代表 Day 1 或 Day 2 做错了。它记录的是当日刻意不深挖、但 30 天内必须有明确去处的内容。旧分支保持冻结；补课只在后续分支进行。
 
+> 使用顺序：从 [学习首页](README.md) 进入，按 [8 周核心执行计划](eight-week-core-plan.md) 确定当前学习单元，再阅读对应 `day-*.md`。本台账只记录未完成项的后续落点和证据，不得用补课替代 [第一代 30 天主计划](original-30-day-baseline.md) 的原主题。
+
 ## 已完成，不再重复安排
 
 | 来源 | 已有证据 |
@@ -31,6 +33,17 @@
 | Day 2 补课 | `/code/verify`、`consume(...)`、请求绑定和异常/响应链 | completed | 已沿 `ConsumerAuthController` → `ConsumerSmsLoginApplicationService` → `ConsumerSmsChallengeService.consume(...)` 口述并完成问答。 |
 | Day 3 原计划 | Filter/Controller 请求链、IoC/构造器注入、Bean 生命周期、AOP/事务、Controller 边界 | completed | 已完成 10 道口述题、2 道场景题，并有身份服务编译/定向测试证据。 |
 | Day 3 原计划 | `MvcServiceFlowPractice.java`：输入对象 → Service → 返回对象最小练习 | scheduled carryover | Day 4 开场复习先完成并记录运行输出；Day 4 的并发新内容不减少。 |
+
+## Day 4 收尾审计（2026-09-05 / 当前 checkout `interview-sprint`）
+
+| 来源 | 项目 | 分类 | 去处与复习证据 |
+|---|---|---|---|
+| Day 3 转入 | MVC 最小练习 | completed | `MvcServiceFlowPractice.java` 已输出“小明支付100元”。 |
+| Day 4 原计划 | HashMap 深入、ConcurrentHashMap 复合操作 | completed | 完成口述；`ConcurrentHashMapPractice2.java` 已验证 `computeIfAbsent` 只创建一次会话。Day14 复习。 |
+| Day 4 原计划 | 竞态、`volatile`、CAS、AtomicInteger、锁和 AQS 直觉 | completed | `AtomicCounterPractice.java` 结果为 `20000/20000`；锁与 AQS 深度诊断保留 Day21 复习。 |
+| Day 4 原计划 | 线程池、队列、拒绝、关闭、Future/CompletableFuture | completed | 已运行线程池、取消、拒绝、支付页组装练习；Day14/Day21 复习。 |
+| Day 4 原计划 | Agent Run Gate、实例内 Semaphore、虚拟线程职责 | completed | 已跟读三处源码并通过 `AgentRunApplicationServiceTest`（6/0/0）。Day21 复习。 |
+| MQ 未来主线 | Inbox、`eventId` 持久化幂等的完整实现 | intentional later-depth | Day10--12 保留原计划；Day4 只建立“JVM 内 Map 不足以跨实例去重”的边界。 |
 
 ## Day 4 初始化（`8.28`）
 

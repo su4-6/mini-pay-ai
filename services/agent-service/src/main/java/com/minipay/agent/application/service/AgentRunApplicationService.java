@@ -76,6 +76,8 @@ public class AgentRunApplicationService {
     }
 
     @Transactional
+    // Application layer use case: validates/sanitizes request inputs and returns the created or replayed Run.
+    // The transaction owns admission plus persistence; it does not call the remote model while holding the gate.
     public CreateRunResult createRun(
             UUID userId,
             UUID conversationId,
@@ -90,6 +92,7 @@ public class AgentRunApplicationService {
                 + sanitized.text() + "\n" + contextVersion);
 
         Instant now = clock.instant();
+        // 先锁用户级持久化 Gate，再查询幂等结果、统计并创建 Run，避免多实例同时越过准入上限。
         repository.lockUserRunGate(userId, now);
 
         AgentRun existing = repository.findRunByIdempotencyHash(userId, conversationId, idempotencyHash)
@@ -147,6 +150,7 @@ public class AgentRunApplicationService {
     @Transactional
     public AgentRun resumeExecution(UUID userId, UUID runId) {
         AgentRun current = getRun(userId, runId);
+        // 恢复执行也会占用活动 Run 名额，因此必须复用同一个跨实例 Gate。
         repository.lockUserRunGate(userId, clock.instant());
         repository.lockConversation(userId, current.conversationId())
                 .orElseThrow(() -> new AgentApplicationException(

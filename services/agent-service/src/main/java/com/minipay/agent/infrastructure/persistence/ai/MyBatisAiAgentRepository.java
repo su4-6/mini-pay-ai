@@ -106,6 +106,8 @@ public class MyBatisAiAgentRepository implements AiAgentRepository {
 
     @Override
     public void lockUserRunGate(UUID userId, Instant now) {
+        // Infrastructure adapter: first ensure the user's gate row exists, then lock that row in this transaction.
+        // 这样即使用户此前没有 Gate 记录也有对象可锁，并让多个服务实例在数据库处串行执行准入检查。
         mapper.insertUserRunGate(bytes(userId), local(now));
         if (mapper.lockUserRunGate(bytes(userId)) == null) {
             throw new IllegalStateException("Agent user run gate is not available");
